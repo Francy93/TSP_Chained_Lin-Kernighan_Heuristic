@@ -37,7 +37,7 @@ public class Main {
 						System.out.println(Util.colorText("Please enter a valid file name!\r\n", "yellow"));
 					}else if(cities.getCorrupted()>0){
 						System.out.println(Util.colorText("Found "+cities.getCorrupted()+" corrupted lines!\r\n", "red"));
-					}else{
+					}/* else{
 						double bestCompTime = cities.getCompTime();
 						int cycles = 1000;
 
@@ -46,7 +46,7 @@ public class Main {
 							bestCompTime = cities.getCompTime() < bestCompTime? cities.getCompTime(): bestCompTime;
 						}
 						System.out.print(Util.colorText("\r\nBest computation time out of "+cycles+" is: "+bestCompTime+"\r\n", "green"));
-					}
+					} */
 			}
 		}
 		return 1;
