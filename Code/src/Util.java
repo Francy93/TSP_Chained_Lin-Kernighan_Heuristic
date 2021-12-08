@@ -285,56 +285,86 @@ public class Util{
 		return getChoice(options.length);
     }
 
-	// Lambda function
+	/**
+	 * Lambda function with just a parameter
+	 */ 
 	public static interface Lambda<T, V extends Comparable<V>>{
         public V op(T a);
     }
 
 	/**
-     * (QuickSort) sorting cities according to the distance
+     * (QuickSort) sorting elements according to theire specific values
      * @see https://bit.ly/3GGQU4W
      * @param arr
      * @param mode (SortMode)
      * @return City[]
      */
-	public static <T	 extends Comparable<T>> T[] quickSort(T[] arr){
-        if(arr.length > 1) return quickSort(arr, 0, arr.length-1, true, (a) -> a);
+	public static <T	 extends Comparable<T>> T[] quickSort(final T[] arr){
+        if(arr.length > 1) return new QuickSort<T,T>(arr, true, (a) -> a).getSorted();
 		else return arr;
     }
-	public static <T	 extends Comparable<T>> T[] quickSort(T[] arr, final boolean mode){
-        if(arr.length > 1) return quickSort(arr, 0, arr.length-1, mode, (a) -> a);
+	public static <T	 extends Comparable<T>> T[] quickSort(final T[] arr, final boolean mode){
+        if(arr.length > 1) return new QuickSort<T,T>(arr, mode, (a) -> a).getSorted();
 		else return arr;
     }
-    public static <T, V  extends Comparable<V>> T[] quickSort(T[] arr, final Lambda<T, V> compare){
-		if(arr.length > 1) return quickSort(arr, 0, arr.length-1, true, compare);
+    public static <T, V  extends Comparable<V>> T[] quickSort(final T[] arr, final Lambda<T, V> compare){
+		if(arr.length > 1) return new QuickSort<T,V>(arr, true, compare).getSorted();
 		else return arr;
     }
-    private static <T, V extends Comparable<V>> T[] quickSort(T[] arr, final int left, final int right, final boolean mode, final Lambda<T, V> compare){
-		int l	= left, r = right; 
 
-		// getting mid point
-		final int mid = (l + r) / 2;
-		// getting the pivot
-		final var pivot = compare.op(arr[mid]);
+	private static class QuickSort<T, V extends Comparable<V>>{
 
-		// partition 
-		while (l <= r) {
-			// loop left index if the current element is smaller or greater than pivot
-			while (mode? compare.op(arr[l++]).compareTo(pivot) < 0: compare.op(arr[l++]).compareTo(pivot) > 0);
-			// loop right index if the current element is greater or smaller than pivot
-			while (mode? compare.op(arr[r--]).compareTo(pivot) > 0: compare.op(arr[r--]).compareTo(pivot) < 0);
+		private final boolean mode;				// this is the direction the array get sorted
+		private final Lambda<T, V> compare;		// this is what of the array has to be compared
+		T[] array;								// the array to be sorted
 
-			if (--l <= ++r) {
-				final T tmpNode	= arr[l];
-				arr[l++]	= arr[r];
-				arr[r--]	= tmpNode;
-			}
+		/**
+		 * (QuickSort) sorting elements according to theire specific values
+     	 * @see https://bit.ly/3GGQU4W
+		 * @param a array
+		 * @param m mode
+		 * @param c lambda method
+		 */
+		private QuickSort(final T[] a, final boolean m, final Lambda<T, V> c){
+			array	= a;
+			mode	= m;
+			compare = c;
+			quickSort(0, array.length-1);
 		}
 
-		// recursion
-		if (left < r ) quickSort(arr, left,  r, mode, compare);
-		if (l < right) quickSort(arr, l, right, mode, compare);
+		private T[] quickSort(final int left, final int right){
+			int l	= left, r = right; 
 
-		return arr;
+			// getting the pivot by mid point
+			final var pivot = compare.op(array[(l + r) / 2]);
+
+			// partition 
+			while (l <= r) {
+				// loop left index if the current element is smaller or greater than pivot
+				while (mode? compare.op(array[l]).compareTo(pivot) < 0: compare.op(array[l]).compareTo(pivot) > 0)	l++;
+				// loop right index if the current element is greater or smaller than pivot
+				while (mode? compare.op(array[r]).compareTo(pivot) > 0: compare.op(array[r]).compareTo(pivot) < 0)	r--;
+
+				if (l <= r) {
+					final T tmpNode	= array[l];
+					array[l++]	= array[r];
+					array[r--]	= tmpNode;
+				}
+			}
+
+			// recursion
+			if (left < r ) quickSort(left,  r);
+			if (l < right) quickSort(l, right);
+
+			return array;
+		}
+
+		/**
+		 * Getting the sorted array
+		 * @return sorted array
+		 */
+		public T[] getSorted(){
+			return array;
+		}
 	}
 }

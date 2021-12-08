@@ -1,19 +1,22 @@
 
 public class Main {
 	public static Cities cities;
+	public static final short EXIT = -1;
+	public static final short BACK =  0;
+	public static final short AHEAD=  1;
 
 	// setting the environment
 	public static int envSet(){
 		System.out.println(Util.colorText("Environment setting", "magenta"));
 
 		switch(Util.navChoice(5,"Colors ON  (VScode)","Colors OFF (Eclipse)")){
-			case -1: return -1;
-			case  0: return  0;
-			case  1: Util.setColor(true);
+			case EXIT: return EXIT;
+			case BACK: return BACK;
+			case	1: Util.setColor(true);
 				break;
-			case  2: Util.setColor(false);
+			case  	2: Util.setColor(false);
 		}
-		return 1;
+		return AHEAD;
 	}
 
 	// initialising the cities object
@@ -27,8 +30,8 @@ public class Main {
 			String choice = Util.cinln();
 			
 			switch (choice){
-				case "00": return -1;
-				case "0" : return  0;
+				case "00": return EXIT;
+				case "0" : return BACK;
 				default:
 					cities = new Cities(choice);
 
@@ -49,7 +52,7 @@ public class Main {
 					} */
 			}
 		}
-		return 1;
+		return AHEAD;
 	}
 
 
@@ -64,11 +67,11 @@ public class Main {
 		System.out.println(Util.colorText("\r\n\r\nWelcome to theTravelling Salesman Problem\r\n","cyan"));
 
 		// main loop
-		for(int nav = envSet(); nav != -1; nav = nav!=0? nav: envSet()){
-			nav = nav==0? nav: readCities();
+		for(int nav = envSet();	nav!=EXIT;	nav = nav!=BACK? nav: envSet()){
+			nav = nav==BACK? nav: readCities();
 
 			// getting result before and after cycling the generations
-			if(nav == 1){
+			if(nav == AHEAD){
 				cities.printResult();
 				System.out.println();
 			}

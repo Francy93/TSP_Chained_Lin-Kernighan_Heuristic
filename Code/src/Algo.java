@@ -8,8 +8,8 @@ public class Algo {
     private final City[]		 cities;		// Array of Cities
 	private City			   baseCity;		// Starting point
 	private final int		   N_CITIES;		// Total number of cities
-	private final int			MAX_OPT;		// Maximum optimization recursions (representing the "K-OPT" of Lin-Kernighan Heuristic)
-	private final int 			MAX_LKH;		// Maximum optimization attempts of a sequence (Lin-Kernighan Heuristic)
+	private final int			MAX_OPT;		// Maximum optimization levels (representing the number of "K-OPT" to carry out)
+	private final int 			MAX_LKH;		// Maximum optimization attempts of each "K-OPT" level (Lin-Kernighan Heuristic)
 	private final double MIN_GAIN = 0.00001;	// Optimiser (Lin-Kernighan) minimum acceptable gain
 
 	/**
@@ -139,7 +139,7 @@ public class Algo {
 
 
 	/**
-	 * Optimising the first local tour with the "Lin Kerninghan Heuristic" (LKH)
+	 * Optimising a first local tour with the "Lin Kerninghan Heuristic" (LKH)
 	 * @see https://bit.ly/3EpQ6zT
 	 * @param currentOPT
 	 * @param previousGain
@@ -164,7 +164,7 @@ public class Algo {
 			tempCity	= tempCity.getNextCity(prevHolder);
         }
 		
-		// sorting by score in a decreasing order
+		// sorting by score in a decreasing order (the last two paramenters are respectively "left start" and "right end")
         scoreSort(scored, 0, scored.length-1);
 
 

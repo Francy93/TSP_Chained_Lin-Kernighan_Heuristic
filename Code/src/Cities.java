@@ -64,7 +64,6 @@ public class Cities {
 			String line = "";
 
 			while((line = scann.readLine()) != null){
-				/* line = scann.nextLine(); */
 				if(!line.trim().matches("^\\s*([+-]?\\d+([.]\\d+)?\\s+){2}([+-]?\\d+([.]\\d+)?)\\s*$")) continue;
 				City city = new City(line);
 	
