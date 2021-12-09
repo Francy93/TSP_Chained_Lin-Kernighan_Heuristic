@@ -56,7 +56,7 @@ public class Cities {
 	/**
 	 * Txt file reader
 	 * @param fileName
-	 * @return
+	 * @return whether the file has been found or not
 	 */
 	private boolean fileReader(final String fileName){
         try{
@@ -81,7 +81,7 @@ public class Cities {
 		return cities.size() > 0;
     }
 
-	// setting thee route array
+	// setting the route array
 	private void setRoute(){
 		route = routeGen.getRoute();
 		route.add(route.get(0));

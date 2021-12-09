@@ -3,9 +3,9 @@ import java.util.ArrayList;
 public class City {
 
 	private static int counter =	0;						// object creation counter to assign a id/index
-	private static int	 linkedCities;						// number of total linked cityes
-	private final double   name, X, Y;						// this city coordinates
-	private int			  matrixIndex;						// matrix index of this city to get computed distances
+	private static int	 linkedCities;						// number of total linked cities
+	private final double   NAME, X, Y;						// this city coordinates
+	private final int	 MATRIX_INDEX;						// matrix index of this city to get computed distances
 	private boolean corrupted  = false, fullEdges = false;	// mark this object as corrupted if the constructor does not get necessary args
 	private ArrayList<City> neighbours = new ArrayList<>();	// this city neighbors (max 2)
 	private City  clusterEnd   = this;						// last city of the current cluster of this city
@@ -13,11 +13,11 @@ public class City {
 
 	// constructor with correct parameters
 	public City(final double n, final double x, final double y){
-		name = n;
+		NAME = n;
 		X	 = x;
 		Y	 = y;
 
-		matrixIndex = counter++;	
+		MATRIX_INDEX = counter++;
 		linkedCities = 0;
 	}
 	// constructor with string
@@ -29,13 +29,13 @@ public class City {
 		for(String s: line.split(delimiter))	cityAttr.add(Double.parseDouble(s));
 
 		if( cityAttr.size() > 2) {
-			matrixIndex = counter++;
-			name =	cityAttr.get(0);
+			MATRIX_INDEX= counter++;
+			NAME =	cityAttr.get(0);
 			X	 =	cityAttr.get(1);
 			Y	 =	cityAttr.get(2);
 		}else{
-			matrixIndex = -1;
-			name 		= -1;
+			MATRIX_INDEX= -1;
+			NAME 		= -1;
 			X	 		= -1;
 			Y	 		= -1;
 			corrupted	= true;
@@ -52,7 +52,7 @@ public class City {
 
 
 	/**
-	 * Adding neighbour
+	 * Adding neighbor
 	 * @param city
 	 */
 	private void neighbourAdd(final City that){
@@ -62,7 +62,7 @@ public class City {
 	}
 
 	/**
-	 * Setting neighbour of both cities
+	 * Setting neighbor of both cities
 	 * @param city
 	 * @return whether the city could be linked
 	 */
@@ -133,7 +133,7 @@ public class City {
 		return this != that && (this != that.getClusterEnd() || linkedCities == closest.length-1) && isLinkable() && that.isLinkable();
 	}
 
-	// getting the other end of this city claster
+	// getting the other end of this city cluster
 	private City getClusterEnd(){
 		return clusterEnd;
 	}
@@ -155,12 +155,12 @@ public class City {
 
 	// getting city id
 	public int getMatrixIndex(){
-		return matrixIndex;
+		return MATRIX_INDEX;
 	}
 	
 	// getting city name
 	public double getName(){
-		return name;
+		return NAME;
 	}
 
 	// getting x axis
@@ -174,7 +174,7 @@ public class City {
 	}
 
 	// get amount of filled edges
-	public int getNeighboursQty(){
+	private int getNeighboursQty(){
 		return neighbours.size();
 	}
 
@@ -188,7 +188,7 @@ public class City {
 		return closest[n] != this? closest[n]: closest[n-1];
 	}
 	
-	// return true if the overal routing is complete
+	// return true if the overall routing is complete
 	public boolean routeComplete(){
 		return linkedCities == closest.length;
 	}

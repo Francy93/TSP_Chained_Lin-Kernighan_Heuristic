@@ -1,9 +1,10 @@
 
+
 public class Main {
-	public static Cities cities;
-	public static final short EXIT = -1;
-	public static final short BACK =  0;
-	public static final short AHEAD=  1;
+	public static Cities cities;			// object / collection of cities and generated best path
+	public static final short EXIT = -1;  	// terminal navigator exit code
+	public static final short BACK =  0;	// terminal navigator back code
+	public static final short AHEAD=  1;	// terminal navigator ahead code
 
 	// setting the environment
 	public static int envSet(){
@@ -26,24 +27,23 @@ public class Main {
 			System.out.println(Util.colorText("Enter a File name!", "magenta"));
 			Util.navOptions(5, "yellow", true);
 			
-			System.out.print("\r\nEneter here a value:> ");
-			String choice = Util.cinln();
+			System.out.print("\r\nEnter here a value:> ");
+			String choice = Util.cinln();				// getting the user input from the terminal
 			
 			switch (choice){
 				case "00": return EXIT;
 				case "0" : return BACK;
 				default:
-					cities = new Cities(choice);
+					cities = new Cities(choice);		// choice is a string and not a key word
 
 					if(!cities.fileFound()){
 						loop = true;
 						System.out.println(Util.colorText("Please enter a valid file name!\r\n", "yellow"));
-					}else if(cities.getCorrupted()>0){
+					}else if(cities.getCorrupted()>0){	// if any city corrupted found while reading the file
 						System.out.println(Util.colorText("Found "+cities.getCorrupted()+" corrupted lines!\r\n", "red"));
 					}/* else{
 						double bestCompTime = cities.getCompTime();
 						int cycles = 1000;
-
 						for(int i=0; i<cycles; i++){
 							cities = new Cities(choice);
 							bestCompTime = cities.getCompTime() < bestCompTime? cities.getCompTime(): bestCompTime;
@@ -63,7 +63,7 @@ public class Main {
 
 	// The main
 	public static void main(String[] args){
-		Util.setColor(false);
+		Util.setColor(false); // starting without colors in the terminal
 		System.out.println(Util.colorText("\r\n\r\nWelcome to theTravelling Salesman Problem\r\n","cyan"));
 
 		// main loop

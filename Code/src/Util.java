@@ -27,7 +27,7 @@ public class Util{
 		return compTime.get(compTime.size()-1);
 	}
 
-	// getting the time collected sofar
+	// getting the time collected so far
 	public static long getTime(){
 		long totalTime = 0;
 		for(long n: compTime)	totalTime += n;
@@ -88,9 +88,9 @@ public class Util{
 
 
 	/**
-	 * Avarage finder
+	 * Average finder
 	 * @param array
-	 * @return the avarage
+	 * @return the average
 	 */
 	public static int arrayAvarage(double[] array){
 		int index = 0;
@@ -123,7 +123,7 @@ public class Util{
 	/**
 	 * Round adjusting decimals
 	 * @param n number to be rounded
-	 * @param d qty of decimals to be left
+	 * @param d quantity of decimals to be left
 	 * @return rounded
 	 */
 	public static double round(double n, int d){
@@ -195,7 +195,7 @@ public class Util{
 	}
 
 	/**
-	 * Returns a string of numerate options
+	 * Returns a string of enumerated options
 	 * @param opts
 	 * @param minSize
 	 * @param colors
@@ -216,7 +216,7 @@ public class Util{
             if(++i == oSize) iSize = Long.toString(i).length() > iSize? Long.toString(i).length(): iSize;
         }
 
-        String cStart = color(colors);						//yellow corresponds to: "\033[1;35m"
+        String cStart = color(colors);					//yellow corresponds to: "\033[1;35m"
         String cEnd = cStart==""? "": color("reset");	//reset  corresponds to: "\033[0m"
 
         longest = longest+3>=(double)minSize-iSize? longest+3: minSize-iSize;
@@ -293,7 +293,7 @@ public class Util{
     }
 
 	/**
-     * (QuickSort) sorting elements according to theire specific values
+     * (QuickSort) sorting elements according to their specific values
      * @see https://bit.ly/3GGQU4W
      * @param arr
      * @param mode (SortMode)
@@ -316,10 +316,10 @@ public class Util{
 
 		private final boolean mode;				// this is the direction the array get sorted
 		private final Lambda<T, V> compare;		// this is what of the array has to be compared
-		T[] array;								// the array to be sorted
+		private final T[] array;				// this is the array to be sorted
 
 		/**
-		 * (QuickSort) sorting elements according to theire specific values
+		 * (QuickSort) sorting elements according to their specific values
      	 * @see https://bit.ly/3GGQU4W
 		 * @param a array
 		 * @param m mode
@@ -335,7 +335,7 @@ public class Util{
 		private T[] quickSort(final int left, final int right){
 			int l	= left, r = right; 
 
-			// getting the pivot by mid point
+			// getting the pivot from a calculated mid point
 			final var pivot = compare.op(array[(l + r) / 2]);
 
 			// partition 

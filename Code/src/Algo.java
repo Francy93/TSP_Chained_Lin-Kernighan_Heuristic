@@ -16,7 +16,7 @@ public class Algo {
 	 * Constructor
 	 * @param cities
 	 * @param kOpt max levels of K-Opt
-	 * @param lkh mex Lin Kernighan combinations
+	 * @param lkh max Lin Kernighan combinations
 	 */
 	public Algo(final City[] cities, final int kOpt, final int lkh){
 		this.cities = cities;
@@ -24,21 +24,17 @@ public class Algo {
 		MAX_OPT 	= kOpt;
 		MAX_LKH	 	= N_CITIES > lkh? lkh: N_CITIES > 3? N_CITIES-3: 0;
 
-		// initialising the distances matrix
-		costMatrix = setMatrix();
-		
-		// starting the greedy algorithm for the first tour
-        localTour();
-		baseCity = cities[0];
-
-		// running the optimiser (Chained Lin-Kernighan Heuristic)
-		optimiser();
-
-		// setting the array of the final improved path
-		settingRoute();
+		// ......... starting the algorithms .........
+		costMatrix = setMatrix();	// initialising the distances matrix
+        kruskal();					// starting the greedy algorithm for the first tour
+		optimiser();				// running the optimiser (Chained Lin-Kernighan Heuristic)
+		settingRoute();				// setting the array of the final improved path
     }
     public Algo(final City[] c){
-		this(c, 3, c.length-3 >= 5? 5: c.length-3);
+		// first parameter is the cities array
+		// second one is the number of k-OPT
+		// third one is the number of lkh cicles per level
+		this(c, 3, 5);	// calling the main contructos
     }
 
 
@@ -61,7 +57,7 @@ public class Algo {
 	}
 
 	/**
-	 * Setting the costes (distances) matrix
+	 * Setting the costs (distances) matrix
 	 * @return costMatrix
 	 */
 	private double[][] setMatrix(){
@@ -70,15 +66,15 @@ public class Algo {
 
 		for(int i=0; i<N_CITIES; i++){
 			cityA = cities[i].getMatrixIndex();
+			
 			for(int j=0; j<N_CITIES; j++){
 				cityB = cities[j].getMatrixIndex();
-				matrix[cityA][cityB] = euclidean(cities[i],	  cities[j]);
+				matrix[cityA][cityB] = euclidean(cities[i], cities[j]);
 			}
 		}
 		return matrix;
 	}
 
-	//     ---   6 23 9 2 5 17 30 22 7 4 32 11 20 28 10 26 16 8 24 21 27 13 15 19 14 29 25 1 12 18 3 31
 	/**
 	 * Pushing the result into the "route" array
 	 */
@@ -108,17 +104,15 @@ public class Algo {
 
 
 	/**
-	 * Generating first route with a Greedy algorithm
+	 * Generating first route with Kruskal Greedy algorithm (local tour)
 	 */
-    private void localTour(){
+    private void kruskal(){
 		// providing a "closest cities array" to every city
-        for(City city: cities)	city.closest = Util.quickSort(cities.clone(), (c) -> getDistance(c, city));
-        Util.quickSort(cities, (c) -> getDistance(c, c.getClosest(1)));
+        for(City cityA: cities)	cityA.closest = Util.quickSort(cities.clone(), (cityB) -> getDistance(cityA, cityB));
+        Util.quickSort(cities, (city) -> getDistance(city, city.getClosest(1)));
 
-		// starting the greedy algorithm cicle
-        for(int i=0; !cities[i].routeComplete(); i = i==N_CITIES-1? 0: ++i){
-			cities[i].linkClosest();
-        }
+		// starting the greedy algorithm cycle
+        for(int i=0; !cities[i].routeComplete(); i = i==N_CITIES-1? 0: ++i)		cities[i].linkClosest();
 	}
 
 
@@ -126,7 +120,8 @@ public class Algo {
 	 * local tour optimiser (Chained Lin-Kernighan)
 	 */
 	private void optimiser(){
-		final short startLevel = 1, startScore = 0;
+		final short startLevel = 1, startScore = 0;	// setting strting parameters for LKH
+		baseCity = cities[0];						// getting the first city for LKH
 
 		if(N_CITIES > 3 && MAX_OPT > 0){
 			for(int i=0; i<N_CITIES-1;){
@@ -145,7 +140,7 @@ public class Algo {
 	 * @param previousGain
 	 * @return whether it found a better route or not
 	 */
-	private boolean linKernighan(final int currentOPT, final double prevGain){
+	private boolean linKernighan(final int CURRENT_OPT, final double PREV_GAIN){
 		final Score[] scored= new Score[N_CITIES-3];
 
 		// ------------------getting best candidates by LKH------------------
@@ -156,8 +151,8 @@ public class Algo {
 		City prevHolder;
 
 		// getting scores of all the cities
-        for(int i=0;	tempCity != prevBase;){
-			scored[i++] = new Score(tempCity, prevCity, getDistance(prevCity,tempCity)-getDistance(nextBase,tempCity));
+        for(int i=0;	tempCity != prevBase; i++){
+			scored[i] = new Score(tempCity, prevCity, getDistance(prevCity,tempCity)-getDistance(nextBase,tempCity));
 			
 			prevHolder	= prevCity;
 			prevCity	= tempCity;
@@ -173,18 +168,18 @@ public class Algo {
 			final City electedCity = scored[i].city;
 			final City prevElected = scored[i].prevCity;
 	
-			final double old1 = getDistance(baseCity,		nextBase);
-			final double old2 = getDistance(prevElected,	electedCity);
-			final double new1 = getDistance(baseCity,		prevElected);
-			final double new2 = getDistance(nextBase,		electedCity);
+			final double old1 = getDistance(baseCity	,	nextBase   );
+			final double old2 = getDistance(prevElected	,	electedCity);
+			final double new1 = getDistance(baseCity	,	prevElected);
+			final double new2 = getDistance(nextBase	,	electedCity);
 	
-			final double gain = old1 + old2 - new1 - new2 + prevGain;
+			final double gain = old1 + old2 - new1 - new2 + PREV_GAIN;
 
 			// flipping the cities
 			flip(baseCity, nextBase, prevElected, electedCity);
 			
-			// condition to immediately exit the "LKH" function or genearete a new "OPT" level (recursion)
-			if(gain > MIN_GAIN || currentOPT < MAX_OPT && linKernighan(currentOPT+1, gain))	return true;
+			// condition to immediately exit the "LKH" function or generate a new "OPT" level (recursion)
+			if(gain > MIN_GAIN || CURRENT_OPT < MAX_OPT && linKernighan(CURRENT_OPT+1, gain))	return true;
 			else flip(baseCity, prevElected, nextBase, electedCity); // go back to previous state
 		}
 
@@ -200,11 +195,11 @@ public class Algo {
 	 * @param nextB
 	 */
 	private void flip(final City prevA, final City a, final City b, final City nextB){
-		prevA.replaceNeighbour(a, b);
-		a.replaceNeighbour(prevA, nextB);
+		prevA.replaceNeighbour(a, b);		// exchange the link between prevA and a with prevA and b
+		a.replaceNeighbour(prevA, nextB);	// exchange the link between a and prevA with a and prevB
 
-		nextB.replaceNeighbour(b, a);
-		b.replaceNeighbour(nextB, prevA);
+		nextB.replaceNeighbour(b, a);		// exchange the link between nextB and b with nextB and a
+		b.replaceNeighbour(nextB, prevA);	// exchange the link between b and nextB with b and prevA
 	}
 
 
@@ -215,17 +210,17 @@ public class Algo {
      * @param mode (SortMode)
      * @return City[]
      */
-	private void scoreSort(final Score[] arr, final int left, final int right){
-		int l	= left, r = right;
+	private void scoreSort(final Score[] arr, final int LEFT, final int RIGHT){
+		int l	= LEFT, r = RIGHT;
 
-		// getting the pivot (LKH score) from the mid point
+		// getting the pivot (LKH score) from a calculated mid point
 		final double PIVOT = arr[(l + r) / 2].score;
 
 		// partition 
 		while (l <= r) {
 			// loop left index if the current score is greater than the pivot one
 			while (arr[l].score > PIVOT) l++;
-			// loop right index if the current score is smoller than the pivot one
+			// loop right index if the current score is smaller than the pivot one
 			while (arr[r].score < PIVOT) r--;
 
 			if (l <= r) {
@@ -236,9 +231,9 @@ public class Algo {
 		}
 
 		// sorting from right to left
-		if (left < r )					scoreSort(arr, left,  r);
-		// sorting from left to right and terminate the sorting algorithm at the "MAX_LKH"th sorted element
-		if (l < MAX_LKH && l < right)	scoreSort(arr, l, right);
+		if (LEFT < r )					scoreSort(arr, LEFT,  r);
+		// sorting from left to right and terminate the sorting algorithm at the "MAX_LKH"nth sorted element
+		if (l < MAX_LKH && l < RIGHT)	scoreSort(arr, l, RIGHT);
 	}
 
 	
