@@ -1,4 +1,4 @@
-# TSP_Chained_Lin-Kernighan_Heuristic
+# TSP Chained Lin-Kernighan Heuristic
 AI: First project of the Computer Science third-year about Artificial Intelligence.
 
 ![alt text](Report/img/Page1.jpg "Main page")
