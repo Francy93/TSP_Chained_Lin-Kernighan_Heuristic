@@ -110,6 +110,7 @@ public class Algo {
     private void kruskal(){
 		// providing a "closest cities array" to every city
         for(City cityA: cities)	cityA.closest = Util.quickSort(cities.clone(), (cityB) -> getDistance(cityA, cityB));
+		// the way of sorting "cities" will determine if the Kruscal algorithm will run normal or reverse side
         Util.quickSort(cities, (city) -> getDistance(city, city.getClosest(1)));
 
 		// starting the greedy algorithm cycle
