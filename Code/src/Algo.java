@@ -79,8 +79,9 @@ public class Algo {
 	 * Pushing the result into the "route" array
 	 */
 	private void settingRoute(){
-		finalRoute = new ArrayList<>();
-		City city = baseCity, prevCity;
+		finalRoute	= new ArrayList<>();
+		baseCity 	= cities[0];
+		City city	= baseCity, prevCity;
 
 		// copying every city into the "finalRoute" array
 		while(finalRoute.size() < N_CITIES){
