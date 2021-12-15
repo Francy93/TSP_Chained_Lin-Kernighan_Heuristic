@@ -199,28 +199,7 @@ public class Map {
 
 	//.....	GETTER METHODs .....
 
-	// getting versions quantity
-	private int versionsQty(){
-		return VERSIONS==null? 0: VERSIONS.size();
-	}
-	// get number of linked cities
-	public int getLinkedCitiesQty(){
-		return VERSIONS.get(version-1)[LINKED_CITIES];
-	}
-	
-	// getting neighbor 1
-	public int indexNeighbor1(){
-		return VERSIONS.get(version-1)[NEIGHBOR1];
-	}
-	// getting neighbor 2
-	public int indexNeighbor2(){
-		return VERSIONS.get(version-1)[NEIGHBOR2];
-	}
-	// getting route (first tour) version
-	public int getVersion(){
-		return version;
-	}
-	
+
 	// get route
 	private ArrayList<Long> getRoute(){
 		ArrayList<Long> intRoute = new ArrayList<>();
@@ -241,6 +220,27 @@ public class Map {
 		}
 
 		return distance;
+	}
+
+	// getting versions quantity
+	private int versionsQty(){
+		return VERSIONS==null? 0: VERSIONS.size();
+	}
+	// get number of linked cities
+	public int getLinkedCitiesQty(){
+		return VERSIONS.get(version-1)[LINKED_CITIES];
+	}
+	// getting neighbor 1
+	public int indexNeighbor1(){
+		return VERSIONS.get(version-1)[NEIGHBOR1];
+	}
+	// getting neighbor 2
+	public int indexNeighbor2(){
+		return VERSIONS.get(version-1)[NEIGHBOR2];
+	}
+	// getting route (first tour) version
+	public int getVersion(){
+		return version;
 	}
 
 

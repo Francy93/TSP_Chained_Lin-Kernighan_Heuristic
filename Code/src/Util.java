@@ -62,9 +62,7 @@ public class Util{
 	 */
 	public static String StringRepeat(String s, long n){
 		String str = "";
-		for(long i=0; i<n; i++){
-			str += s;
-		}
+		for(long i=0; i<n; i++) 	str += s;
 		return str;
 	}
 
@@ -78,9 +76,7 @@ public class Util{
 		try{  
 			Double.parseDouble(str);  
 			return true;
-		}catch(NumberFormatException e){  
-			return false;
-		}  
+		}catch(NumberFormatException e){ return false; }
 	}
 
 	
@@ -91,36 +87,16 @@ public class Util{
 	 */
 	public static class ArrayMath {
 
-		public static double plus(int[] array) { 
-			return sum(array, (a,b) -> a+b);
-		}
-		public static double minus(int[] array) { 
-			return sum(array, (a,b) -> a-b);
-		}
-		public static double plus(double[] array) {
-			return sum(array, (a,b) -> a+b);
-		}
-		public static double minus(double[] array) {
-			return sum(array, (a,b) -> a-b);
-		}
-		public static double plus(long[] array) {
-			return sum(array, (a,b) -> a+b);
-		}
-		public static double minus(long[] array) {
-			return sum(array, (a,b) -> a-b);
-		}
-		public static <T extends Number> double plus(T[] array){
-			return sum(array, (a,b) -> a+b.doubleValue());
-		}
-		public static <T extends Number> double minus(T[] array){
-			return sum(array, (a,b) -> a-b.doubleValue());
-		}
-		public static <T extends Number> double plus(ArrayList<T> array){
-			return sum(array, (a,b) -> a+b.doubleValue());
-		}
-		public static <T extends Number> double minus(ArrayList<T> array){
-			return sum(array, (a,b) -> a-b.doubleValue());
-		}
+		public static double plus (int[]	array) { return sum(array, (a,b) -> a+b); }
+		public static double minus(int[]	array) { return sum(array, (a,b) -> a-b); }
+		public static double plus (double[]	array) { return sum(array, (a,b) -> a+b); }
+		public static double minus(double[]	array) { return sum(array, (a,b) -> a-b); }
+		public static double plus (long[]	array) { return sum(array, (a,b) -> a+b); }
+		public static double minus(long[]	array) { return sum(array, (a,b) -> a-b); }
+		public static <T extends Number> double plus (T[]			array) { return sum(array, (a,b) -> a+b.doubleValue()); }
+		public static <T extends Number> double minus(T[]			array) { return sum(array, (a,b) -> a-b.doubleValue()); }
+		public static <T extends Number> double plus (ArrayList<T>	array) { return sum(array, (a,b) -> a+b.doubleValue()); }
+		public static <T extends Number> double minus(ArrayList<T>	array) { return sum(array, (a,b) -> a-b.doubleValue()); }
 		public static double sum(int[] array, Lambda2<Integer, Double> comput ){
 			double result = array[0];
 			for(int i=1; i<array.length; i++)   result = comput.op(result, array[i]);
@@ -369,7 +345,7 @@ public class Util{
 
 	private static class QuickSort<T, V extends Comparable<V>>{
 
-		private final boolean mode;				// this is the direction the array get sorted
+		private final boolean MODE;				// this is the direction the array get sorted
 		private final Lambda1<T, V> compare;	// this is what of the array has to be compared
 		private final T[] array;				// this is the array to be sorted
 
@@ -382,7 +358,7 @@ public class Util{
 		 */
 		private QuickSort(final T[] a, final boolean m, final Lambda1<T, V> c){
 			array	= a;
-			mode	= m;
+			MODE	= m;
 			compare = c;
 			quickSort(0, array.length-1);
 		}
@@ -391,14 +367,14 @@ public class Util{
 			int l	= left, r = right; 
 
 			// getting the pivot from a calculated mid point
-			final var pivot = compare.op(array[(l + r) / 2]);
+			final var PIVOT = compare.op(array[(l + r) / 2]);
 
 			// partition 
 			while (l <= r) {
 				// loop left index if the current element is smaller or greater than pivot
-				while (mode? compare.op(array[l]).compareTo(pivot) < 0: compare.op(array[l]).compareTo(pivot) > 0)	l++;
+				while (MODE? compare.op(array[l]).compareTo(PIVOT) < 0: compare.op(array[l]).compareTo(PIVOT) > 0)	l++;
 				// loop right index if the current element is greater or smaller than pivot
-				while (mode? compare.op(array[r]).compareTo(pivot) > 0: compare.op(array[r]).compareTo(pivot) < 0)	r--;
+				while (MODE? compare.op(array[r]).compareTo(PIVOT) > 0: compare.op(array[r]).compareTo(PIVOT) < 0)	r--;
 
 				if (l <= r) {
 					final T tmpNode	= array[l];

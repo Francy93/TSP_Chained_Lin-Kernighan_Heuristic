@@ -30,13 +30,13 @@ public class Main {
 			Util.navOptions(5, "yellow", true);
 			
 			System.out.print("\r\nEnter here a value:> ");
-			String choice = Util.cinln();				// getting the user input from the terminal
+			String choice = Util.cinln();	// getting the user input from the terminal
 			
 			switch (choice){
 				case "00": return EXIT;
 				case "0" : return BACK;
 				default:
-					map = new Map(choice);		// choice is a string and not a key word
+					map = new Map(choice);	// choice is a string and not a key word
 
 					if(!map.fileFound()){
 						System.out.println(Util.colorText("Please enter a valid file name!\r\n", "yellow"));

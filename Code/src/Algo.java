@@ -139,18 +139,18 @@ public class Algo {
 	 * @return whether it found a better route or not
 	 */
 	private boolean linKernighan(final int CURRENT_OPT, final double PREV_GAIN){
-		final Score[] scored= new Score[this.N_CITIES-3];
+		final Score[] SCORED= new Score[this.N_CITIES-3];
 
 		// ------------------getting best candidates by LKH------------------
-		final City prevBase = this.baseCity.getNeighbour2();
-		final City nextBase = this.baseCity.getNeighbour1();
-		City prevCity		= nextBase;
+		final City PREV_BASE= this.baseCity.getNeighbour2();
+		final City NEXT_BASE= this.baseCity.getNeighbour1();
+		City prevCity		= NEXT_BASE;
 		City tempCity		= prevCity.getNextCity(this.baseCity);
 		City prevHolder;
 
 		// getting scores of all the cities
-        for(int i=0;	tempCity != prevBase; i++){
-			scored[i] = new Score(tempCity, prevCity, MAP.getDistance(prevCity,tempCity)-MAP.getDistance(nextBase,tempCity));
+        for(int i=0;	tempCity != PREV_BASE; i++){
+			SCORED[i] = new Score(tempCity, prevCity, MAP.getDistance(prevCity,tempCity)-MAP.getDistance(NEXT_BASE,tempCity));
 			
 			prevHolder	= prevCity;
 			prevCity	= tempCity;
@@ -158,27 +158,27 @@ public class Algo {
         }
 		
 		// sorting by score in a decreasing order (the last two paramenters are respectively "left start" and "right end")
-        scoreSort(scored, 0, scored.length-1);
+        scoreSort(SCORED, 0, SCORED.length-1);
 
 
 		//-----------------running the K-opt-------------------
 		for(int i=0; i<this.MAX_LKH; i++){
-			final City electedCity = scored[i].city;
-			final City prevElected = scored[i].prevCity;
+			final City ELECTED_CITY = SCORED[i].CITY;
+			final City PREV_ELECTED = SCORED[i].PREV_CITY;
 	
-			final double old1 = MAP.getDistance(this.baseCity,	nextBase   );
-			final double old2 = MAP.getDistance(prevElected	 ,	electedCity);
-			final double new1 = MAP.getDistance(this.baseCity,	prevElected);
-			final double new2 = MAP.getDistance(nextBase	 ,	electedCity);
+			final double old1 = MAP.getDistance(this.baseCity,	NEXT_BASE   );
+			final double old2 = MAP.getDistance(PREV_ELECTED ,	ELECTED_CITY);
+			final double new1 = MAP.getDistance(this.baseCity,	PREV_ELECTED);
+			final double new2 = MAP.getDistance(NEXT_BASE	 ,	ELECTED_CITY);
 	
 			final double GAIN = old1 + old2 - new1 - new2 + PREV_GAIN;
 
 			// flipping the cities
-			flip(this.baseCity, nextBase, prevElected, electedCity);
+			flip(this.baseCity, NEXT_BASE, PREV_ELECTED, ELECTED_CITY);
 			
 			// condition to immediately exit the "LKH" function or generate a new "OPT" level (recursion)
 			if(GAIN > this.MIN_GAIN || CURRENT_OPT < this.MAX_OPT && linKernighan(CURRENT_OPT+1, GAIN))	return true;
-			else flip(this.baseCity, prevElected, nextBase, electedCity); // go back to previous state
+			else flip(this.baseCity, PREV_ELECTED, NEXT_BASE, ELECTED_CITY); // go back to previous state
 		}
 
 		return false;
@@ -212,14 +212,14 @@ public class Algo {
 		int l	= LEFT, r = RIGHT;
 
 		// getting the pivot (LKH score) from a calculated mid point
-		final double PIVOT = arr[(l + r) / 2].score;
+		final double PIVOT = arr[(l + r) / 2].SCORE;
 
 		// partition 
 		while (l <= r) {
 			// loop left index if the current score is greater than the pivot one
-			while (arr[l].score > PIVOT) l++;
+			while (arr[l].SCORE > PIVOT) l++;
 			// loop right index if the current score is smaller than the pivot one
-			while (arr[r].score < PIVOT) r--;
+			while (arr[r].SCORE < PIVOT) r--;
 
 			if (l <= r) {
 				final Score tmpNode = arr[l];
@@ -229,7 +229,7 @@ public class Algo {
 		}
 
 		// sorting from right to left
-		if (LEFT < r )					scoreSort(arr, LEFT,  r);
+		if (LEFT < r )						scoreSort(arr, LEFT,  r);
 		// sorting from left to right and terminate the sorting algorithm at the "MAX_LKH"nth sorted element
 		if (l < this.MAX_LKH && l < RIGHT)	scoreSort(arr, l, RIGHT);
 	}
@@ -267,8 +267,8 @@ public class Algo {
 
 		// copying every city into the "finalRoute" array
 		for(int i=0; i< this.N_CITIES; i++){
-
 			distance	+= MAP.getDistance(city, prevCity);
+
 			prevHolder	= prevCity;
 			prevCity	= city;
 			city		= city.getNextCity(prevHolder);
