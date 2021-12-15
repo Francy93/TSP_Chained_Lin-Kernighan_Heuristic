@@ -1,6 +1,10 @@
+
 import java.util.Scanner;
 import java.util.ArrayList;
 
+/**
+ * This class is a collection of various tools
+ */
 public class Util{
 	public static Scanner cin = new Scanner(System.in);
 

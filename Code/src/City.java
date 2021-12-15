@@ -1,5 +1,10 @@
+
 import java.util.ArrayList;
 
+/**
+ * This class provides methods and variables that handle operations like
+ * “settingNeighbor”, “replacingNeighbor”, and relevant methods to handle cities.
+ */
 public class City{
 
 	// number of total linked cities / version of the path /

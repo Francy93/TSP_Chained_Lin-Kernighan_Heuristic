@@ -4,6 +4,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * This class starts the timer, the file reader (generating all the city objects)
+ * and creates an Algo object containing the final solution.
+ */
 public class Map {
 	private int version=1;
 	private final int LINKED_CITIES=0, NEIGHBOR1=1, NEIGHBOR2=2;

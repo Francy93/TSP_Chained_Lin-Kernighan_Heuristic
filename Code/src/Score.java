@@ -1,4 +1,7 @@
 
+/**
+ * This class is a simple and small scores container.
+ */
 public class Score {
     public final City	   city;	// city owner of this score
     public final City  prevCity;	// city behind this one

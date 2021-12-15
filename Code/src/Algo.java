@@ -1,12 +1,16 @@
 
 import java.util.ArrayList;
 
+/**
+ * This class is a algorithms container which generates the final solution:
+ * Kruskal-TSP, Chained Lin-Kernighan and Quick-Sort (mono pivot).
+ */
 public class Algo {
     
 	private ArrayList<City>	 finalRoute;		// Array storing the final improved path
 	private City[] 		 		 cities;		// Array of Cities
-    private final Map				MAP;		// Map object, container of cities
 	private City			   baseCity;		// Starting point
+    private final Map				MAP;		// Map object, container of cities
 	private final int		   N_CITIES;		// Total number of cities
 	private final int			MAX_OPT;		// Maximum optimization levels (representing the number of "K-OPT" to carry out)
 	private final int 			MAX_LKH;		// Maximum optimization attempts of each "K-OPT" level (Lin-Kernighan Heuristic)
@@ -51,15 +55,15 @@ public class Algo {
 	 * Pushing the result into the "route" array
 	 */
 	private void settingRoute(){
-		finalRoute	= new ArrayList<>();
-		baseCity 	= cities[0];
-		City city	= baseCity, prevCity;
+		this.finalRoute	= new ArrayList<>();
+		this.baseCity 	= this.cities[0];
+		City city		= this.baseCity, prevCity;
 
 		// copying every city into the "finalRoute" array
-		while(finalRoute.size() < N_CITIES){
-			finalRoute.add(city);
+		while(this.finalRoute.size() < this.N_CITIES){
+			this.finalRoute.add(city);
 
-			prevCity = finalRoute.size() > 1? finalRoute.get(finalRoute.size()-2): city;
+			prevCity = this.finalRoute.size() > 1? this.finalRoute.get(this.finalRoute.size()-2): city;
 			city = city.getNextCity(prevCity);
 		}
 	}
@@ -77,24 +81,24 @@ public class Algo {
 	 * Generating first route with Kruskal Greedy algorithm (local tour)
 	 */
     private void kruskal(){
-		final ArrayList<City[]> versions = new ArrayList<>();											// container of versions
+		final ArrayList<City[]> VERSIONS = new ArrayList<>();											// container of versions
 		final Util.Lambda1<City, Double> NORMAL	= (city) ->	 MAP.getDistance(city, city.getClosest(1));	// lambda to create a normal kruskal version
 		final Util.Lambda1<City, Double> REVERSE= (city) ->	-MAP.getDistance(city, city.getClosest(1));	// lambda to create a reverse kruskal version
 
 		// generating two baseic path versions to be elaborated by the Kruskal
-		versions.add(Util.quickSort(cities.clone(),	NORMAL ));	// getting a normal kruskal version
-		versions.add(Util.quickSort(cities		  , REVERSE));	// getting a reverse kruskal version
+		VERSIONS.add(Util.quickSort(this.cities.clone()	, NORMAL	));	// getting a normal kruskal version
+		VERSIONS.add(Util.quickSort(this.cities			, REVERSE	));	// getting a reverse kruskal version
 
 		// generating the local tour versions
-		for(int i=0; i<versions.size(); i++){
+		for(int i=0; i<VERSIONS.size(); i++){
 			// starting the actual greedy algorithm cycle
-			for(int j=0; !versions.get(i)[j].routeComplete(); j = j==N_CITIES-1? 0: j+1)	versions.get(i)[j].linkClosest();
-			if(i < versions.size()-1)  MAP.setNewVersion();		// creating a new version
+			for(int j=0; !VERSIONS.get(i)[j].routeComplete(); j = j==this.N_CITIES-1? 0: j+1)	VERSIONS.get(i)[j].linkClosest();
+			if(i < VERSIONS.size()-1)  MAP.setNewVersion();		// creating a new version
 		}
 
 
 		// cycling over the versions to choose the best one
-		for(double currentVer=versions.size()-1, bestDist=getRouteDistance(), bestVer=currentVer+1;	currentVer>0;	currentVer--){
+		for(double currentVer=VERSIONS.size()-1, bestDist=getRouteDistance(), bestVer=currentVer+1;	currentVer>0;	currentVer--){
 			MAP.setVersion((int)currentVer);
 			double currentDist = getRouteDistance();
 
@@ -104,7 +108,7 @@ public class Algo {
 			}
 			if(currentVer == 1){
 				MAP.setVersion((int)bestVer);
-				cities = versions.get((int)bestVer-1);
+				this.cities = VERSIONS.get((int)bestVer-1);
 			}
 		}
 	}
@@ -114,14 +118,14 @@ public class Algo {
 	 * local tour optimiser (Chained Lin-Kernighan)
 	 */
 	private void optimiser(){
-		final short startLevel = 1, startScore = 0;	// setting strting parameters for LKH
-		baseCity = cities[0];						// getting the first city for LKH
+		final short START_LEVEL = 1, START_SCORE = 0;	// setting strting parameters for LKH
+		this.baseCity = this.cities[0];						// getting the first city for LKH
 
-		if(N_CITIES > 3 && MAX_OPT > 0){
-			for(int i=0; i<N_CITIES-1;){
+		if(this.N_CITIES > 3 && this.MAX_OPT > 0){
+			for(int i=0; i<this.N_CITIES-1;){
 				// condition for Chaining (attempting to improve again)
-				if(linKernighan(startLevel, startScore));
-				else baseCity = cities[++i];
+				if(linKernighan(START_LEVEL, START_SCORE));
+				else this.baseCity = this.cities[++i];
 			}
 		}
 	}
@@ -135,13 +139,13 @@ public class Algo {
 	 * @return whether it found a better route or not
 	 */
 	private boolean linKernighan(final int CURRENT_OPT, final double PREV_GAIN){
-		final Score[] scored= new Score[N_CITIES-3];
+		final Score[] scored= new Score[this.N_CITIES-3];
 
 		// ------------------getting best candidates by LKH------------------
-		final City prevBase = baseCity.getNeighbour2();
-		final City nextBase = baseCity.getNeighbour1();
+		final City prevBase = this.baseCity.getNeighbour2();
+		final City nextBase = this.baseCity.getNeighbour1();
 		City prevCity		= nextBase;
-		City tempCity		= prevCity.getNextCity(baseCity);
+		City tempCity		= prevCity.getNextCity(this.baseCity);
 		City prevHolder;
 
 		// getting scores of all the cities
@@ -158,23 +162,23 @@ public class Algo {
 
 
 		//-----------------running the K-opt-------------------
-		for(int i=0; i<MAX_LKH; i++){
+		for(int i=0; i<this.MAX_LKH; i++){
 			final City electedCity = scored[i].city;
 			final City prevElected = scored[i].prevCity;
 	
-			final double old1 = MAP.getDistance(baseCity	,	nextBase   );
-			final double old2 = MAP.getDistance(prevElected	,	electedCity);
-			final double new1 = MAP.getDistance(baseCity	,	prevElected);
-			final double new2 = MAP.getDistance(nextBase	,	electedCity);
+			final double old1 = MAP.getDistance(this.baseCity,	nextBase   );
+			final double old2 = MAP.getDistance(prevElected	 ,	electedCity);
+			final double new1 = MAP.getDistance(this.baseCity,	prevElected);
+			final double new2 = MAP.getDistance(nextBase	 ,	electedCity);
 	
-			final double gain = old1 + old2 - new1 - new2 + PREV_GAIN;
+			final double GAIN = old1 + old2 - new1 - new2 + PREV_GAIN;
 
 			// flipping the cities
-			flip(baseCity, nextBase, prevElected, electedCity);
+			flip(this.baseCity, nextBase, prevElected, electedCity);
 			
 			// condition to immediately exit the "LKH" function or generate a new "OPT" level (recursion)
-			if(gain > MIN_GAIN || CURRENT_OPT < MAX_OPT && linKernighan(CURRENT_OPT+1, gain))	return true;
-			else flip(baseCity, prevElected, nextBase, electedCity); // go back to previous state
+			if(GAIN > this.MIN_GAIN || CURRENT_OPT < this.MAX_OPT && linKernighan(CURRENT_OPT+1, GAIN))	return true;
+			else flip(this.baseCity, prevElected, nextBase, electedCity); // go back to previous state
 		}
 
 		return false;
@@ -227,7 +231,7 @@ public class Algo {
 		// sorting from right to left
 		if (LEFT < r )					scoreSort(arr, LEFT,  r);
 		// sorting from left to right and terminate the sorting algorithm at the "MAX_LKH"nth sorted element
-		if (l < MAX_LKH && l < RIGHT)	scoreSort(arr, l, RIGHT);
+		if (l < this.MAX_LKH && l < RIGHT)	scoreSort(arr, l, RIGHT);
 	}
 
 	
@@ -256,13 +260,13 @@ public class Algo {
 	private double getRouteDistance(){
 		double distance = 0;
 
-		baseCity = cities[0];
-		City city	= baseCity;
-		City prevCity = baseCity.getNeighbour2();
+		this.baseCity	= this.cities[0];
+		City city		= this.baseCity;
+		City prevCity	= this.baseCity.getNeighbour2();
 		City prevHolder;
 
 		// copying every city into the "finalRoute" array
-		for(int i=0; i< N_CITIES; i++){
+		for(int i=0; i< this.N_CITIES; i++){
 
 			distance	+= MAP.getDistance(city, prevCity);
 			prevHolder	= prevCity;

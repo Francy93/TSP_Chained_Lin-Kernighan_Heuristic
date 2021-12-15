@@ -1,5 +1,7 @@
 
-
+/**
+ * This class ask the user to enter a file name via terminal.
+ */
 public class Main {
 	public static Map map;					// object / collection of cities and generated best path
 	public static final short EXIT = -1;  	// terminal navigator exit code
