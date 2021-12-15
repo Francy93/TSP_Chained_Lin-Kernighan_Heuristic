@@ -1,7 +1,7 @@
 
 
 public class Main {
-	public static Cities cities;			// object / collection of cities and generated best path
+	public static Map map;					// object / collection of cities and generated best path
 	public static final short EXIT = -1;  	// terminal navigator exit code
 	public static final short BACK =  0;	// terminal navigator back code
 	public static final short AHEAD=  1;	// terminal navigator ahead code
@@ -23,7 +23,7 @@ public class Main {
 	// initialising the cities object
 	public static int readCities(){
 
-		for(boolean loop = false; !loop; loop = !loop){
+		while(true){
 			System.out.println(Util.colorText("Enter a File name!", "magenta"));
 			Util.navOptions(5, "yellow", true);
 			
@@ -34,25 +34,24 @@ public class Main {
 				case "00": return EXIT;
 				case "0" : return BACK;
 				default:
-					cities = new Cities(choice);		// choice is a string and not a key word
+					map = new Map(choice);		// choice is a string and not a key word
 
-					if(!cities.fileFound()){
-						loop = true;
+					if(!map.fileFound()){
 						System.out.println(Util.colorText("Please enter a valid file name!\r\n", "yellow"));
-					}else if(cities.getCorrupted()>0){	// if any city corrupted found while reading the file
-						System.out.println(Util.colorText("Found "+cities.getCorrupted()+" corrupted lines!\r\n", "red"));
-					}else{
-						double bestCompTime = cities.getCompTime();
+					}else return AHEAD; /*else{
+						double bestCompTime = map.getCompTime();
 						int cycles = 1000;
 						for(int i=0; i<cycles; i++){
-							cities = new Cities(choice);
-							bestCompTime = cities.getCompTime() < bestCompTime? cities.getCompTime(): bestCompTime;
+							map = new Map(choice);
+							bestCompTime = map.getCompTime() < bestCompTime? map.getCompTime(): bestCompTime;
 						}
 						System.out.print(Util.colorText("\r\nBest computation time out of "+cycles+" is: "+bestCompTime+"\r\n", "green"));
-					}
+
+						return AHEAD;
+					}*/
+					
 			}
 		}
-		return AHEAD;
 	}
 
 
@@ -72,7 +71,7 @@ public class Main {
 
 			// getting result before and after cycling the generations
 			if(nav == AHEAD){
-				cities.printResult();
+				map.printResult();
 				System.out.println();
 			}
 		}

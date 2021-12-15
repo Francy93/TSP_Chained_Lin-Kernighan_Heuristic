@@ -4,8 +4,8 @@ import java.util.ArrayList;
 public class Algo {
     
 	private ArrayList<City>	 finalRoute;		// Array storing the final improved path
-	private final double[][] costMatrix;		// Array of all the distances values
-    private final City[]		 cities;		// Array of Cities
+	private City[] 		 		 cities;		// Array of Cities
+    private final Map				MAP;		// Map object, container of cities
 	private City			   baseCity;		// Starting point
 	private final int		   N_CITIES;		// Total number of cities
 	private final int			MAX_OPT;		// Maximum optimization levels (representing the number of "K-OPT" to carry out)
@@ -14,27 +14,27 @@ public class Algo {
 
 	/**
 	 * Constructor
-	 * @param cities
+	 * @param map
 	 * @param kOpt max levels of K-Opt
 	 * @param lkh max Lin Kernighan combinations
 	 */
-	public Algo(final City[] cities, final int kOpt, final int lkh){
-		this.cities = cities;
-		N_CITIES 	= cities.length;
+	public Algo(final Map map, final int kOpt, final int lkh){
+		MAP 		= map;
+		cities 		= MAP.getCities();
+		N_CITIES 	= MAP.getQuantity();
 		MAX_OPT 	= kOpt;
 		MAX_LKH	 	= N_CITIES > lkh? lkh: N_CITIES > 3? N_CITIES-3: 0;
 
 		// ......... starting the algorithms .........
-		costMatrix = setMatrix();	// initialising the distances matrix
         kruskal();					// starting the greedy algorithm for the first tour
 		optimiser();				// running the optimiser (Chained Lin-Kernighan Heuristic)
 		settingRoute();				// setting the array of the final improved path
     }
-    public Algo(final City[] c){
+    public Algo(final Map m){
 		// first parameter is the cities array
 		// second one is the number of k-OPT
-		// third one is the number of lkh cicles per level
-		this(c, 3, 5);	// calling the main contructos
+		// third one is the number of lkh cycles per level
+		this(m, 3, 5);	// calling the main contructos
     }
 
 
@@ -46,34 +46,6 @@ public class Algo {
 
 
 
-	/**
-     * Euclidean calculation
-     * @param a
-	 * @param b
-     * @return distance
-     */
-	private double euclidean(final City a, final City b){
-		return Math.sqrt( Math.pow((a.getX() - b.getX()),2) + Math.pow((a.getY() - b.getY()),2) );
-	}
-
-	/**
-	 * Setting the costs (distances) matrix
-	 * @return costMatrix
-	 */
-	private double[][] setMatrix(){
-		double[][] matrix = new double[N_CITIES][N_CITIES];
-		int cityA, cityB;
-
-		for(int i=0; i<N_CITIES; i++){
-			cityA = cities[i].getMatrixIndex();
-			
-			for(int j=0; j<N_CITIES; j++){
-				cityB = cities[j].getMatrixIndex();
-				matrix[cityA][cityB] = euclidean(cities[i], cities[j]);
-			}
-		}
-		return matrix;
-	}
 
 	/**
 	 * Pushing the result into the "route" array
@@ -98,9 +70,6 @@ public class Algo {
 
 
 
-
-
-
 	// ............algorithms...........
 
 
@@ -108,13 +77,36 @@ public class Algo {
 	 * Generating first route with Kruskal Greedy algorithm (local tour)
 	 */
     private void kruskal(){
-		// providing a "closest cities array" to every city
-        for(City cityA: cities)	cityA.closest = Util.quickSort(cities.clone(), (cityB) -> getDistance(cityA, cityB));
-		// the way of sorting "cities" will determine if the Kruscal algorithm will run normal or reverse side
-        Util.quickSort(cities, (city) -> getDistance(city, city.getClosest(1)));
+		final ArrayList<City[]> versions = new ArrayList<>();											// container of versions
+		final Util.Lambda1<City, Double> NORMAL	= (city) ->	 MAP.getDistance(city, city.getClosest(1));	// lambda to create a normal kruskal version
+		final Util.Lambda1<City, Double> REVERSE= (city) ->	-MAP.getDistance(city, city.getClosest(1));	// lambda to create a reverse kruskal version
 
-		// starting the greedy algorithm cycle
-        for(int i=0; !cities[i].routeComplete(); i = i==N_CITIES-1? 0: ++i)		cities[i].linkClosest();
+		// generating two baseic path versions to be elaborated by the Kruskal
+		versions.add(Util.quickSort(cities.clone(),	NORMAL ));	// getting a normal kruskal version
+		versions.add(Util.quickSort(cities		  , REVERSE));	// getting a reverse kruskal version
+
+		// generating the local tour versions
+		for(int i=0; i<versions.size(); i++){
+			// starting the actual greedy algorithm cycle
+			for(int j=0; !versions.get(i)[j].routeComplete(); j = j==N_CITIES-1? 0: j+1)	versions.get(i)[j].linkClosest();
+			if(i < versions.size()-1)  MAP.setNewVersion();		// creating a new version
+		}
+
+
+		// cycling over the versions to choose the best one
+		for(double currentVer=versions.size()-1, bestDist=getRouteDistance(), bestVer=currentVer+1;	currentVer>0;	currentVer--){
+			MAP.setVersion((int)currentVer);
+			double currentDist = getRouteDistance();
+
+			if(currentDist	< bestDist){
+				bestVer		= currentVer;
+				bestDist	= currentDist;
+			}
+			if(currentVer == 1){
+				MAP.setVersion((int)bestVer);
+				cities = versions.get((int)bestVer-1);
+			}
+		}
 	}
 
 
@@ -154,7 +146,7 @@ public class Algo {
 
 		// getting scores of all the cities
         for(int i=0;	tempCity != prevBase; i++){
-			scored[i] = new Score(tempCity, prevCity, getDistance(prevCity,tempCity)-getDistance(nextBase,tempCity));
+			scored[i] = new Score(tempCity, prevCity, MAP.getDistance(prevCity,tempCity)-MAP.getDistance(nextBase,tempCity));
 			
 			prevHolder	= prevCity;
 			prevCity	= tempCity;
@@ -170,10 +162,10 @@ public class Algo {
 			final City electedCity = scored[i].city;
 			final City prevElected = scored[i].prevCity;
 	
-			final double old1 = getDistance(baseCity	,	nextBase   );
-			final double old2 = getDistance(prevElected	,	electedCity);
-			final double new1 = getDistance(baseCity	,	prevElected);
-			final double new2 = getDistance(nextBase	,	electedCity);
+			final double old1 = MAP.getDistance(baseCity	,	nextBase   );
+			final double old2 = MAP.getDistance(prevElected	,	electedCity);
+			final double new1 = MAP.getDistance(baseCity	,	prevElected);
+			final double new2 = MAP.getDistance(nextBase	,	electedCity);
 	
 			final double gain = old1 + old2 - new1 - new2 + PREV_GAIN;
 
@@ -250,15 +242,6 @@ public class Algo {
 
     //...........getter methods...........
 
-	/**
-	 * Getting the distance between two given cities
-	 * @param a first city
-	 * @param b second city
-	 * @return euclidean distance
-	 */
-	public double getDistance(final City a, final City b){
-		return costMatrix[a.getMatrixIndex()][b.getMatrixIndex()];
-	}
 
 	/**
 	 * Getting the best route
@@ -267,4 +250,26 @@ public class Algo {
     public ArrayList<City> getRoute(){
         return new ArrayList<>(finalRoute);
     }
+
+
+	// get total distance
+	private double getRouteDistance(){
+		double distance = 0;
+
+		baseCity = cities[0];
+		City city	= baseCity;
+		City prevCity = baseCity.getNeighbour2();
+		City prevHolder;
+
+		// copying every city into the "finalRoute" array
+		for(int i=0; i< N_CITIES; i++){
+
+			distance	+= MAP.getDistance(city, prevCity);
+			prevHolder	= prevCity;
+			prevCity	= city;
+			city		= city.getNextCity(prevHolder);
+		}
+
+		return distance;
+	}
 }

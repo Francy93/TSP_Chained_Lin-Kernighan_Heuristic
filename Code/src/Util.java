@@ -4,6 +4,16 @@ import java.util.ArrayList;
 public class Util{
 	public static Scanner cin = new Scanner(System.in);
 
+	/**
+	 * Lambda function with just a parameter
+	 */ 
+	public static interface Lambda1<T, V>{
+        public V op(T a);
+    }
+	public static interface Lambda2<T, V>{
+        public V op(V a, T b);
+    }
+
 	//determining whether the text get colored or not
 	private static boolean colorState = true, timerOnOff;
 	private static ArrayList<Long> compTime = new ArrayList<>();
@@ -75,17 +85,64 @@ public class Util{
 	 * @param array
 	 * @return sum
 	 */
-	public static double arraySum(int[] array) { 
-		double sum = 0;
-		for (double value: array) sum += value;
-		return sum;
-	}
-	public static double arraySum(double[] array) {
-		double sum = 0;
-		for (double value: array) sum += value;
-		return sum;
-	}
+	public static class ArrayMath {
 
+		public static double plus(int[] array) { 
+			return sum(array, (a,b) -> a+b);
+		}
+		public static double minus(int[] array) { 
+			return sum(array, (a,b) -> a-b);
+		}
+		public static double plus(double[] array) {
+			return sum(array, (a,b) -> a+b);
+		}
+		public static double minus(double[] array) {
+			return sum(array, (a,b) -> a-b);
+		}
+		public static double plus(long[] array) {
+			return sum(array, (a,b) -> a+b);
+		}
+		public static double minus(long[] array) {
+			return sum(array, (a,b) -> a-b);
+		}
+		public static <T extends Number> double plus(T[] array){
+			return sum(array, (a,b) -> a+b.doubleValue());
+		}
+		public static <T extends Number> double minus(T[] array){
+			return sum(array, (a,b) -> a-b.doubleValue());
+		}
+		public static <T extends Number> double plus(ArrayList<T> array){
+			return sum(array, (a,b) -> a+b.doubleValue());
+		}
+		public static <T extends Number> double minus(ArrayList<T> array){
+			return sum(array, (a,b) -> a-b.doubleValue());
+		}
+		public static double sum(int[] array, Lambda2<Integer, Double> comput ){
+			double result = array[0];
+			for(int i=1; i<array.length; i++)   result = comput.op(result, array[i]);
+			return result;
+		}
+		public static double sum(double[] array, Lambda2<Double, Double> comput ){
+			double result = array[0];
+			for(int i=1; i<array.length; i++)   result = comput.op(result, array[i]);
+			return result;
+		}
+		public static double sum(long[] array, Lambda2<Long, Double> comput ){
+			double result = array[0];
+			for(int i=1; i<array.length; i++)   result = comput.op(result, array[i]);
+			return result;
+		}
+		public static <T extends Number> double sum(ArrayList<T> array, Lambda2<T, Double> comput ){
+			double result = array.get(0).doubleValue();
+			for(int i=1; i<array.size(); i++)   result = comput.op(result, array.get(i));
+			return result;
+		}
+		public static <T extends Number> double sum(T[] array, Lambda2<T, Double> comput ){
+			double result = array[0].doubleValue();
+			for(int i=1; i<array.length; i++)   result = comput.op(result, array[i]);
+			return result;
+		}
+	}
 
 	/**
 	 * Average finder
@@ -95,7 +152,7 @@ public class Util{
 	public static int arrayAvarage(double[] array){
 		int index = 0;
 		double difference = 0;
-		double mean = arraySum(array) / array.length;
+		double mean = ArrayMath.plus(array) / array.length;
 
 		for(int i=0; i<array.length; i++){
 			double sub = mean <= array[i]? array[i] - mean: mean - array[i];
@@ -285,12 +342,6 @@ public class Util{
 		return getChoice(options.length);
     }
 
-	/**
-	 * Lambda function with just a parameter
-	 */ 
-	public static interface Lambda<T, V extends Comparable<V>>{
-        public V op(T a);
-    }
 
 	/**
      * (QuickSort) sorting elements according to their specific values
@@ -307,7 +358,7 @@ public class Util{
         if(arr.length > 1) return new QuickSort<T,T>(arr, mode, (a) -> a).getSorted();
 		else return arr;
     }
-    public static <T, V  extends Comparable<V>> T[] quickSort(final T[] arr, final Lambda<T, V> compare){
+    public static <T, V  extends Comparable<V>> T[] quickSort(final T[] arr, final Lambda1<T, V> compare){
 		if(arr.length > 1) return new QuickSort<T,V>(arr, true, compare).getSorted();
 		else return arr;
     }
@@ -315,7 +366,7 @@ public class Util{
 	private static class QuickSort<T, V extends Comparable<V>>{
 
 		private final boolean mode;				// this is the direction the array get sorted
-		private final Lambda<T, V> compare;		// this is what of the array has to be compared
+		private final Lambda1<T, V> compare;	// this is what of the array has to be compared
 		private final T[] array;				// this is the array to be sorted
 
 		/**
@@ -325,7 +376,7 @@ public class Util{
 		 * @param m mode
 		 * @param c lambda method
 		 */
-		private QuickSort(final T[] a, final boolean m, final Lambda<T, V> c){
+		private QuickSort(final T[] a, final boolean m, final Lambda1<T, V> c){
 			array	= a;
 			mode	= m;
 			compare = c;

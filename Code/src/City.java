@@ -1,47 +1,31 @@
 import java.util.ArrayList;
 
-public class City {
+public class City{
 
-	private static int counter =	0;						// object creation counter to assign a id/index
-	private static int	 linkedCities;						// number of total linked cities
+	// number of total linked cities / version of the path /
+	
 	private final double   NAME, X, Y;						// this city coordinates
 	private final int	 MATRIX_INDEX;						// matrix index of this city to get computed distances
-	private boolean corrupted  = false, fullEdges = false;	// mark this object as corrupted if the constructor does not get necessary args
-	private ArrayList<City> neighbours = new ArrayList<>();	// this city neighbors (max 2)
-	private City  clusterEnd   = this;						// last city of the current cluster of this city
+	private ArrayList<City>  neighbors = new ArrayList<>();	// this city neighbors (as pairs)
+	private ArrayList<City> clusterEnd = new ArrayList<>();	// last city of the current cluster of this city
+	private final Map			  MAP;						// cities container
 	public City[] 			  closest;						// array of closest cities
 
-	// constructor with correct parameters
-	public City(final double n, final double x, final double y){
-		NAME = n;
-		X	 = x;
-		Y	 = y;
-
-		MATRIX_INDEX = counter++;
-		linkedCities = 0;
-	}
-	// constructor with string
-	public City(final String str){
-		final String delimiter = " ";
-		String line = str.replaceAll("\\s+", delimiter).trim();
-
-		ArrayList<Double> cityAttr = new ArrayList<>();
-		for(String s: line.split(delimiter))	cityAttr.add(Double.parseDouble(s));
-
-		if( cityAttr.size() > 2) {
-			MATRIX_INDEX= counter++;
-			NAME =	cityAttr.get(0);
-			X	 =	cityAttr.get(1);
-			Y	 =	cityAttr.get(2);
-		}else{
-			MATRIX_INDEX= -1;
-			NAME 		= -1;
-			X	 		= -1;
-			Y	 		= -1;
-			corrupted	= true;
-		}
-
-		linkedCities = 0;
+	/**
+	 * City constructor
+	 * @param n Name
+	 * @param x Coordinate X
+	 * @param y Coordinate Y
+	 * @param id City id (index of matrix distances)
+	 * @param m	cities container
+	 */
+	public City(final double n, final double x, final double y, final int id, final Map m){
+		// initialising non static constants
+		MATRIX_INDEX= id;
+		MAP			= m;
+		NAME		= n;
+		X	 		= x;
+		Y	 		= y;
 	}
 
 
@@ -53,24 +37,25 @@ public class City {
 
 	/**
 	 * Adding neighbor
-	 * @param city
+	 * @param that the other city
 	 */
-	private void neighbourAdd(final City that){
-		neighbours.add(that);
-		fullEdges = getNeighboursQty() >= 2;
-		getClusterEnd().clusterEnd = this.getClusterEnd()==that.getClusterEnd()? that: that.getClusterEnd();
+	private void neighborAdd(final City that){
+		neighbors.add(that);
+		if(getClusterEnd().clusterEnd.size() < MAP.getVersion()){
+			getClusterEnd().clusterEnd.add(this.getClusterEnd()==that.getClusterEnd()? that: that.getClusterEnd());
+		}else getClusterEnd().clusterEnd.set(MAP.getVersion()-1, this.getClusterEnd()==that.getClusterEnd()? that: that.getClusterEnd());
 	}
 
 	/**
 	 * Setting neighbor of both cities
-	 * @param city
+	 * @param that the other city
 	 * @return whether the city could be linked
 	 */
-	private boolean setNeighbours(final City city){
-		if(canLinkTo(city)){
-			this.neighbourAdd(city);
-			city.neighbourAdd(this);
-			linkedCities++;
+	private boolean setNeighbors(final City that){
+		if(canLinkTo(that)){
+			this.neighborAdd(that);
+			that.neighborAdd(this);
+			MAP.increaseLinkedCities();
 			return true;
 		}else return false;
 	}
@@ -82,31 +67,31 @@ public class City {
 	public boolean linkClosest(){
 		if(isLinkable()){
 			for(int i = 1; i<closest.length; i++){
-				if(setNeighbours(getClosest(i))) return true;
+				if(setNeighbors(getClosest(i))) return true;
 			}
 		}
 		return false;
 	}
 
 	// setting neighbor 1
-	private void setNeighbour1(final City c){
-		neighbours.set(0,c);
+	private void setNeighbor1(final City c){
+		neighbors.set(MAP.indexNeighbor1(), c);
 	}
 	// setting neighbor 2
-	private void setNeighbour2(final City c){
-		neighbours.set(1,c);
+	private void setNeighbor2(final City c){
+		neighbors.set(MAP.indexNeighbor2(), c);
 	}
 
 	/**
 	 * Replace existing neighbors
-	 * @param old
+	 * @param OLD
 	 * @param NEW
 	 */
 	public void replaceNeighbour(final City OLD, final City NEW){
-		if	   (getNeighbour1() == OLD) setNeighbour1(NEW);
-		else if(getNeighbour2() == OLD) setNeighbour2(NEW);
-		else if(getNeighbour1() == NEW) setNeighbour1(OLD);
-		else if(getNeighbour2() == NEW) setNeighbour2(OLD);
+		if	   (getNeighbour1() == OLD) setNeighbor1(NEW);
+		else if(getNeighbour2() == OLD) setNeighbor2(NEW);
+		else if(getNeighbour1() == NEW) setNeighbor1(OLD);
+		else if(getNeighbour2() == NEW) setNeighbor2(OLD);
 	}
 
 
@@ -121,7 +106,7 @@ public class City {
 
 	// getting edges status
 	private boolean isLinkable(){
-		return !fullEdges && !routeComplete();
+		return getNeighborsQty()<2 && !routeComplete();
 	}
 
 	/**
@@ -130,27 +115,22 @@ public class City {
 	 * @return linkable or not
 	 */
 	private boolean canLinkTo(final City that){
-		return this != that && (this != that.getClusterEnd() || linkedCities == closest.length-1) && isLinkable() && that.isLinkable();
+		return this != that && (this != that.getClusterEnd() || MAP.getLinkedCitiesQty() == closest.length-1) && isLinkable() && that.isLinkable();
 	}
 
 	// getting the other end of this city cluster
 	private City getClusterEnd(){
-		return clusterEnd;
+		return clusterEnd.size() < MAP.getVersion()? this :clusterEnd.get(MAP.getVersion()-1);
 	}
 
 	// getting the name of the city at the edge 1
 	public City getNeighbour1(){
-		return neighbours.get(0);
+		return neighbors.get(MAP.indexNeighbor1());
 	}
 
 	// getting the name of the city at the edge 2
 	public City getNeighbour2(){
-		return neighbours.get(1);
-	}
-
-	// getting the city status after reading from the file
-	public boolean isCorrupted(){
-		return corrupted;
+		return neighbors.get(MAP.indexNeighbor2());
 	}
 
 	// getting city id
@@ -173,9 +153,9 @@ public class City {
 		return Y;
 	}
 
-	// get amount of filled edges
-	private int getNeighboursQty(){
-		return neighbours.size();
+	// get amount of neighbors
+	private int getNeighborsQty(){
+		return neighbors.size()+2 - (2*MAP.getVersion());
 	}
 
 	/**
@@ -190,7 +170,7 @@ public class City {
 	
 	// return true if the overall routing is complete
 	public boolean routeComplete(){
-		return linkedCities == closest.length;
+		return MAP.getLinkedCitiesQty() == closest.length;
 	}
 
 	/**
@@ -200,9 +180,5 @@ public class City {
 	 */
 	public City getNextCity(final City prevCity){
 		return prevCity == getNeighbour1()? getNeighbour2(): getNeighbour1();
-	}
-
-	public void resetCounter(){
-		counter = 0;
 	}
 }
