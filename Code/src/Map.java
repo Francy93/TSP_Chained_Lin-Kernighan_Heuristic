@@ -11,9 +11,10 @@ import java.util.ArrayList;
 public class Map {
 	private int version=1;
 	private final int LINKED_CITIES=0, NEIGHBOR1=1, NEIGHBOR2=2;
-	private final ArrayList<int[]> VERSIONS;
+	private final ArrayList<int[]> VERSIONS;	// parametesrs of first tour versions
 	private final Algo			  ROUTE_GEN;	// route generator
 	private final City[]			 CITIES;	// list of cities
+	private final City		   CENTER_POINT;	// the center of the cartesian map
 	private final double[][]	DIST_MATRIX;	// Array of all the distances values
 	private final ArrayList<City>	  ROUTE;	// generated route
 	private final int			   N_CITIES;	// Total number of cities
@@ -33,11 +34,13 @@ public class Map {
 		VERSIONS	= versionsInit();
 
 		if(FILE_FOUND){
+			CENTER_POINT= centerPointGen(); // generating the center point of the map
 			DIST_MATRIX	= matrixGen();		// generating a distances matrix
 			setClosest();					// setting list of closest cities
 			ROUTE_GEN	= new Algo(this);	// generating an optimal path
 			ROUTE 		= setRoute();		// setting the route array
 		}else{
+			CENTER_POINT= null;
 			DIST_MATRIX = null;
 			ROUTE_GEN	= null;
 			ROUTE		= null;
@@ -54,6 +57,18 @@ public class Map {
 
 	// ..... SETTER METHODs .....
 
+
+	// generating center point
+	private City centerPointGen(){
+		double x = 0, y = 0;
+
+		for(City city :CITIES){
+			x += city.getX();
+			y += city.getY();
+		}
+		
+		return new City(-1, x/N_CITIES, y/N_CITIES, N_CITIES, this);
+	}
 
 	// increasing the number of linked cities
 	public void increaseLinkedCities(){
@@ -174,18 +189,23 @@ public class Map {
 	 * @return costMatrix
 	 */
 	private double[][] matrixGen(){
-		double[][] matrix = new double[N_CITIES][N_CITIES];
+		final City[] CITIES_AND_CENTER = new City[N_CITIES+1];
+		for(int i=0; i<CITIES.length; i++)	CITIES_AND_CENTER[i] = CITIES[i];
+		CITIES_AND_CENTER[N_CITIES] = CENTER_POINT;
+		final int CC_LENGTH = CITIES_AND_CENTER.length;
+
+		final double[][] MATRIX = new double[CC_LENGTH][CC_LENGTH];
 		int cityA, cityB;
 
-		for(int i=0; i<N_CITIES; i++){
-			cityA = CITIES[i].getMatrixIndex();
+		for(int i=0; i<CC_LENGTH; i++){
+			cityA = CITIES_AND_CENTER[i].getMatrixIndex();
 			
-			for(int j=0; j<N_CITIES; j++){
-				cityB = CITIES[j].getMatrixIndex();
-				matrix[cityA][cityB] = euclidean(CITIES[i], CITIES[j]);
+			for(int j=0; j<CC_LENGTH; j++){
+				cityB = CITIES_AND_CENTER[j].getMatrixIndex();
+				MATRIX[cityA][cityB] = euclidean(CITIES_AND_CENTER[i], CITIES_AND_CENTER[j]);
 			}
 		}
-		return matrix;
+		return MATRIX;
 	}
 
 
@@ -241,6 +261,11 @@ public class Map {
 	// getting route (first tour) version
 	public int getVersion(){
 		return version;
+	}
+
+	// getting the center of the map
+	public City getCenterPoint(){
+		return CENTER_POINT;
 	}
 
 

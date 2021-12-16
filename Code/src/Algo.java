@@ -30,9 +30,9 @@ public class Algo {
 		MAX_LKH	 	= N_CITIES > lkh? lkh: N_CITIES > 3? N_CITIES-3: 0;
 
 		// ......... starting the algorithms .........
-        kruskal();					// starting the greedy algorithm for the first tour
-		optimiser();				// running the optimiser (Chained Lin-Kernighan Heuristic)
-		settingRoute();				// setting the array of the final improved path
+        kruskal();		// starting the greedy algorithm for the first tour
+		optimiser();	// running the optimiser (Chained Lin-Kernighan Heuristic)
+		settingRoute();	// setting the array of the final improved path
     }
     public Algo(final Map m){
 		// first parameter is the cities array
@@ -77,23 +77,24 @@ public class Algo {
 	// ............algorithms...........
 
 
+	
 	/**
 	 * Generating first route with Kruskal Greedy algorithm (local tour)
 	 */
-    private void kruskal(){
-		final ArrayList<City[]> VERSIONS = new ArrayList<>();											// container of versions
-		final Util.Lambda1<City, Double> NORMAL	= (city) ->	 MAP.getDistance(city, city.getClosest(1));	// lambda to create a normal kruskal version
-		final Util.Lambda1<City, Double> REVERSE= (city) ->	-MAP.getDistance(city, city.getClosest(1));	// lambda to create a reverse kruskal version
+	private void kruskal(){
+		final ArrayList<City[]>			VERSIONS = new ArrayList<>();										// container of versions
+		final Util.Lambda1<City, Double> CENTRAL = (city) ->  MAP.getDistance(city,MAP.getCenterPoint());	// lambda to create a normal kruskal version
+		final Util.Lambda1<City, Double> REVERSE = (city) -> -MAP.getDistance(city,	 city.getClosest(1));	// lambda to create a reverse kruskal version
 
 		// generating two baseic path versions to be elaborated by the Kruskal
-		VERSIONS.add(Util.quickSort(this.cities.clone()	, NORMAL	));	// getting a normal kruskal version
-		VERSIONS.add(Util.quickSort(this.cities			, REVERSE	));	// getting a reverse kruskal version
+		VERSIONS.add(Util.quickSort(this.cities.clone()	, CENTRAL	));										// getting a normal kruskal version
+		VERSIONS.add(Util.quickSort(this.cities			, REVERSE	));										// getting a reverse kruskal version
 
 		// generating the local tour versions
 		for(int i=0; i<VERSIONS.size(); i++){
 			// starting the actual greedy algorithm cycle
 			for(int j=0; !VERSIONS.get(i)[j].routeComplete(); j = j==this.N_CITIES-1? 0: j+1)	VERSIONS.get(i)[j].linkClosest();
-			if(i < VERSIONS.size()-1)  MAP.setNewVersion();		// creating a new version
+			if(i < VERSIONS.size()-1)  MAP.setNewVersion();													// creating a new version
 		}
 
 
@@ -119,7 +120,7 @@ public class Algo {
 	 */
 	private void optimiser(){
 		final short START_LEVEL = 1, START_SCORE = 0;	// setting strting parameters for LKH
-		this.baseCity = this.cities[0];						// getting the first city for LKH
+		this.baseCity = this.cities[0];					// getting the first city for LKH
 
 		if(this.N_CITIES > 3 && this.MAX_OPT > 0){
 			for(int i=0; i<this.N_CITIES-1;){

@@ -40,7 +40,7 @@ public class Main {
 
 					if(!map.fileFound()){
 						System.out.println(Util.colorText("Please enter a valid file name!\r\n", "yellow"));
-					}else return AHEAD; /*else{
+					}/* else return AHEAD; */ else{
 						double bestCompTime = map.getCompTime();
 						int cycles = 1000;
 						for(int i=0; i<cycles; i++){
@@ -50,7 +50,7 @@ public class Main {
 						System.out.print(Util.colorText("\r\nBest computation time out of "+cycles+" is: "+bestCompTime+"\r\n", "green"));
 
 						return AHEAD;
-					}*/
+					}
 					
 			}
 		}

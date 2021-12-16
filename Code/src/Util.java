@@ -87,17 +87,17 @@ public class Util{
 	 */
 	public static class ArrayMath {
 
-		public static double plus (int[]	array) { return sum(array, (a,b) -> a+b); }
-		public static double minus(int[]	array) { return sum(array, (a,b) -> a-b); }
-		public static double plus (double[]	array) { return sum(array, (a,b) -> a+b); }
-		public static double minus(double[]	array) { return sum(array, (a,b) -> a-b); }
-		public static double plus (long[]	array) { return sum(array, (a,b) -> a+b); }
-		public static double minus(long[]	array) { return sum(array, (a,b) -> a-b); }
-		public static <T extends Number> double plus (T[]			array) { return sum(array, (a,b) -> a+b.doubleValue()); }
-		public static <T extends Number> double minus(T[]			array) { return sum(array, (a,b) -> a-b.doubleValue()); }
-		public static <T extends Number> double plus (ArrayList<T>	array) { return sum(array, (a,b) -> a+b.doubleValue()); }
-		public static <T extends Number> double minus(ArrayList<T>	array) { return sum(array, (a,b) -> a-b.doubleValue()); }
-		public static double sum(int[] array, Lambda2<Integer, Double> comput ){
+		public static					 double plus (int[]			array)	{ return sum(array, (a,b) -> a+b); }
+		public static					 double minus(int[]			array)	{ return sum(array, (a,b) -> a-b); }
+		public static					 double plus (double[]		array)	{ return sum(array, (a,b) -> a+b); }
+		public static					 double minus(double[]		array)	{ return sum(array, (a,b) -> a-b); }
+		public static					 double plus (long[]		array)	{ return sum(array, (a,b) -> a+b); }
+		public static					 double minus(long[]		array)	{ return sum(array, (a,b) -> a-b); }
+		public static <T extends Number> double plus (T[]			array)	{ return sum(array, (a,b) -> a+b.doubleValue()); }
+		public static <T extends Number> double minus(T[]			array)	{ return sum(array, (a,b) -> a-b.doubleValue()); }
+		public static <T extends Number> double plus (ArrayList<T>	array)	{ return sum(array, (a,b) -> a+b.doubleValue()); }
+		public static <T extends Number> double minus(ArrayList<T>	array)	{ return sum(array, (a,b) -> a-b.doubleValue()); }
+		public static double sum(int[] array, Lambda2<Integer, Double> comput){
 			double result = array[0];
 			for(int i=1; i<array.length; i++)   result = comput.op(result, array[i]);
 			return result;
