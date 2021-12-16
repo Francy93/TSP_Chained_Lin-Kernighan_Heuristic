@@ -189,8 +189,8 @@ public class Algo {
 	/**
 	 * Flipping the cities
 	 * @param prevA
-	 * @param a
-	 * @param b
+	 * @param a start of flip
+	 * @param b end of flip
 	 * @param nextB
 	 */
 	private void flip(final City prevA, final City a, final City b, final City nextB){
@@ -248,15 +248,6 @@ public class Algo {
     //...........getter methods...........
 
 
-	/**
-	 * Getting the best route
-	 * @return the final route arrayList
-	 */
-    public ArrayList<City> getRoute(){
-        return new ArrayList<>(finalRoute);
-    }
-
-
 	// get total distance
 	private double getRouteDistance(){
 		double distance = 0;
@@ -277,4 +268,14 @@ public class Algo {
 
 		return distance;
 	}
+
+
+	
+	/**
+	 * Getting the best route
+	 * @return the final route arrayList
+	 */
+    public ArrayList<City> getRoute(){
+        return new ArrayList<>(finalRoute);
+    }
 }
