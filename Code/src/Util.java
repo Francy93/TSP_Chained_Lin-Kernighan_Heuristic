@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * This class is a collection of various tools
  */
 public class Util{
-	public static Scanner cin = new Scanner(System.in);
+	public static final Scanner CIN = new Scanner(System.in);
 
 	/**
 	 * Lambda function with just a parameter
@@ -22,7 +22,7 @@ public class Util{
 	private static boolean colorState = true, timerOnOff;
 	private static ArrayList<Long> compTime = new ArrayList<>();
 
-	public static void setColor(boolean b){ colorState = b; }
+	public static void setColor(final boolean B){ colorState = B; }
 	public static boolean colorState(){ return colorState;  }
     
 	/**
@@ -30,7 +30,7 @@ public class Util{
 	 * @param onOff
 	 * @return current time
 	 */
-	public static double timeTrack(boolean onOff){
+	public static double timeTrack(final boolean onOff){
 		long time = System.nanoTime();
 
 		if(onOff && !timerOnOff)					compTime.add(time);
@@ -60,9 +60,9 @@ public class Util{
 	 * @param n
 	 * @return
 	 */
-	public static String StringRepeat(String s, long n){
+	public static String StringRepeat(final String S, final long N){
 		String str = "";
-		for(long i=0; i<n; i++) 	str += s;
+		for(long i=0; i<N; i++) 	str += S;
 		return str;
 	}
 
@@ -72,11 +72,10 @@ public class Util{
 	 * @param str
 	 * @return
 	 */
-	public static boolean isNumeric(String str){ 
-		try{  
-			Double.parseDouble(str);  
-			return true;
-		}catch(NumberFormatException e){ return false; }
+	public static boolean isNumeric(final String STR){ 
+		try{ Double.parseDouble(STR); }
+		catch(NumberFormatException e){ return false; }
+		return true;
 	}
 
 	
@@ -87,37 +86,37 @@ public class Util{
 	 */
 	public static class ArrayMath {
 
-		public static					 double plus (int[]			array)	{ return sum(array, (a,b) -> a+b); }
-		public static					 double minus(int[]			array)	{ return sum(array, (a,b) -> a-b); }
-		public static					 double plus (double[]		array)	{ return sum(array, (a,b) -> a+b); }
-		public static					 double minus(double[]		array)	{ return sum(array, (a,b) -> a-b); }
-		public static					 double plus (long[]		array)	{ return sum(array, (a,b) -> a+b); }
-		public static					 double minus(long[]		array)	{ return sum(array, (a,b) -> a-b); }
-		public static <T extends Number> double plus (T[]			array)	{ return sum(array, (a,b) -> a+b.doubleValue()); }
-		public static <T extends Number> double minus(T[]			array)	{ return sum(array, (a,b) -> a-b.doubleValue()); }
-		public static <T extends Number> double plus (ArrayList<T>	array)	{ return sum(array, (a,b) -> a+b.doubleValue()); }
-		public static <T extends Number> double minus(ArrayList<T>	array)	{ return sum(array, (a,b) -> a-b.doubleValue()); }
-		public static double sum(int[] array, Lambda2<Integer, Double> comput){
+		public static					 double plus (final int[]		array)	{ return sum(array, (a,b) -> a+b			  ); }
+		public static					 double minus(final int[]		array)	{ return sum(array, (a,b) -> a-b			  ); }
+		public static					 double plus (final double[]	array)	{ return sum(array, (a,b) -> a+b			  ); }
+		public static					 double minus(final double[]	array)	{ return sum(array, (a,b) -> a-b			  ); }
+		public static					 double plus (final long[]		array)	{ return sum(array, (a,b) -> a+b			  ); }
+		public static					 double minus(final long[]		array)	{ return sum(array, (a,b) -> a-b			  ); }
+		public static <T extends Number> double plus (final T[]			array)	{ return sum(array, (a,b) -> a+b.doubleValue()); }
+		public static <T extends Number> double minus(final T[]			array)	{ return sum(array, (a,b) -> a-b.doubleValue()); }
+		public static <T extends Number> double plus (final ArrayList<T>array)	{ return sum(array, (a,b) -> a+b.doubleValue()); }
+		public static <T extends Number> double minus(final ArrayList<T>array)	{ return sum(array, (a,b) -> a-b.doubleValue()); }
+		public static double sum(final int[] array, final Lambda2<Integer, Double> comput){
 			double result = array[0];
 			for(int i=1; i<array.length; i++)   result = comput.op(result, array[i]);
 			return result;
 		}
-		public static double sum(double[] array, Lambda2<Double, Double> comput ){
+		public static double sum(final double[] array, final Lambda2<Double, Double> comput ){
 			double result = array[0];
 			for(int i=1; i<array.length; i++)   result = comput.op(result, array[i]);
 			return result;
 		}
-		public static double sum(long[] array, Lambda2<Long, Double> comput ){
+		public static double sum(final long[] array, final Lambda2<Long, Double> comput ){
 			double result = array[0];
 			for(int i=1; i<array.length; i++)   result = comput.op(result, array[i]);
 			return result;
 		}
-		public static <T extends Number> double sum(ArrayList<T> array, Lambda2<T, Double> comput ){
+		public static <T extends Number> double sum(final ArrayList<T> array,final Lambda2<T, Double> comput ){
 			double result = array.get(0).doubleValue();
 			for(int i=1; i<array.size(); i++)   result = comput.op(result, array.get(i));
 			return result;
 		}
-		public static <T extends Number> double sum(T[] array, Lambda2<T, Double> comput ){
+		public static <T extends Number> double sum(final T[] array, final Lambda2<T, Double> comput ){
 			double result = array[0].doubleValue();
 			for(int i=1; i<array.length; i++)   result = comput.op(result, array[i]);
 			return result;
@@ -129,13 +128,13 @@ public class Util{
 	 * @param array
 	 * @return the average
 	 */
-	public static int arrayAvarage(double[] array){
+	public static int arrayAvarage(final double[] ARRAY){
 		int index = 0;
 		double difference = 0;
-		double mean = ArrayMath.plus(array) / array.length;
+		double mean = ArrayMath.plus(ARRAY) / ARRAY.length;
 
-		for(int i=0; i<array.length; i++){
-			double sub = mean <= array[i]? array[i] - mean: mean - array[i];
+		for(int i=0; i<ARRAY.length; i++){
+			double sub = mean <= ARRAY[i]? ARRAY[i] - mean: mean - ARRAY[i];
 
 			if(i==0 || difference > sub){
 				difference = sub;
@@ -148,24 +147,24 @@ public class Util{
 
 	/**
 	 * Logic operator xor
-	 * @param x
-	 * @param y
+	 * @param X
+	 * @param Y
 	 * @return xor
 	 */
-	public static boolean xor(boolean x, boolean y){
-		return ( ( x || y ) && ! ( x && y ) );
+	public static boolean xor(final boolean X, final boolean Y){
+		return ( ( X || Y ) && ! ( X && Y ) );
 	}
 
 
 	/**
 	 * Round adjusting decimals
-	 * @param n number to be rounded
-	 * @param d quantity of decimals to be left
+	 * @param N number to be rounded
+	 * @param D quantity of decimals to be left
 	 * @return rounded
 	 */
-	public static double round(double n, int d){
-		double round = Math.pow(10, d>=0? d: 0);
-		return Math.round(n*round)/round;
+	public static double round(final double N, final int D){
+		double round = Math.pow(10, D>=0? D: 0);
+		return Math.round(N*round)/round;
 	}
 
 
@@ -196,8 +195,8 @@ public class Util{
 	 * @param color
 	 * @return colored string (ANSI)
 	 */
-	public static String colorText(String text, String color){
-		return color(color) + text + color("reset");
+	public static String colorText(final String TEXT, final String COLOR){
+		return color(COLOR) + TEXT + color("reset");
 	}
 
 	/**
@@ -206,9 +205,9 @@ public class Util{
      * @param b
      * @return boolean
      */
-    public static boolean exists(int[] arr, int b){
-        for(int a: arr){
-            if(a==b) return true;
+    public static boolean exists(final int[] ARRAY, final int B){
+        for(final int A: ARRAY){
+            if(A==B) return true;
         }
         return false;
     }
@@ -239,7 +238,7 @@ public class Util{
 	 * @param print
 	 * @return String[]
 	 */
-	public static String[] navOptions(long minSize, String colors, boolean print, String ... opts){
+	public static String[] navOptions(final long MIN_SIZE, final String COLORS, final boolean PRINT, String ... opts){
 		String[] options = new String[opts.length + 2];
 		append(options, opts);
 
@@ -253,10 +252,10 @@ public class Util{
             if(++i == oSize) iSize = Long.toString(i).length() > iSize? Long.toString(i).length(): iSize;
         }
 
-        String cStart = color(colors);					//yellow corresponds to: "\033[1;35m"
+        String cStart = color(COLORS);					//yellow corresponds to: "\033[1;35m"
         String cEnd = cStart==""? "": color("reset");	//reset  corresponds to: "\033[0m"
 
-        longest = longest+3>=(double)minSize-iSize? longest+3: minSize-iSize;
+        longest = longest+3>=(double)MIN_SIZE-iSize? longest+3: MIN_SIZE-iSize;
         i = 0;
         for(String o: opts){
             final long indexSize = iSize - Long.toString(++i).length();
@@ -269,14 +268,14 @@ public class Util{
         options[opts.length+1]	= "Exit"    + StringRepeat(".",longest-4+iSize-2) + cStart+"00"+cEnd;
 
         // printing
-        if(print) for(String line: options) System.out.println(line);
+        if(PRINT) for(String line: options) System.out.println(line);
         return options;
     }
 
 
 	// getting console input
 	public static String cinln(){
-        String input = cin.nextLine();
+        String input = CIN.nextLine();
         System.out.println();
         return input;
     }
@@ -313,13 +312,13 @@ public class Util{
          * @param min
          * @return int 
          */
-	public static int navChoice(long min, String ... options){
+	public static int navChoice(final long MIN, final String ... OPTIONS){
         
         //displaying options
-		navOptions(min, "yellow", true, options);
+		navOptions(MIN, "yellow", true, OPTIONS);
 		System.out.println();
 		//getting the choice
-		return getChoice(options.length);
+		return getChoice(OPTIONS.length);
     }
 
 
@@ -330,64 +329,64 @@ public class Util{
      * @param mode (SortMode)
      * @return City[]
      */
-	public static <T	 extends Comparable<T>> T[] quickSort(final T[] arr){
-        if(arr.length > 1) return new QuickSort<T,T>(arr, true, (a) -> a).getSorted();
-		else return arr;
+	public static <T	 extends Comparable<T>> T[] quickSort(final T[] ARRAY){
+        if(ARRAY.length > 1) return new QuickSort<T,T>(ARRAY, true, (a) -> a).getSorted();
+		else return ARRAY;
     }
-	public static <T	 extends Comparable<T>> T[] quickSort(final T[] arr, final boolean mode){
-        if(arr.length > 1) return new QuickSort<T,T>(arr, mode, (a) -> a).getSorted();
-		else return arr;
+	public static <T	 extends Comparable<T>> T[] quickSort(final T[] ARRAY, final boolean mode){
+        if(ARRAY.length > 1) return new QuickSort<T,T>(ARRAY, mode, (a) -> a).getSorted();
+		else return ARRAY;
     }
-    public static <T, V  extends Comparable<V>> T[] quickSort(final T[] arr, final Lambda1<T, V> compare){
-		if(arr.length > 1) return new QuickSort<T,V>(arr, true, compare).getSorted();
-		else return arr;
+    public static <T, V  extends Comparable<V>> T[] quickSort(final T[] ARRAY, final Lambda1<T, V> compare){
+		if(ARRAY.length > 1) return new QuickSort<T,V>(ARRAY, true, compare).getSorted();
+		else return ARRAY;
     }
 
 	private static class QuickSort<T, V extends Comparable<V>>{
 
 		private final boolean MODE;				// this is the direction the array get sorted
-		private final Lambda1<T, V> compare;	// this is what of the array has to be compared
-		private final T[] array;				// this is the array to be sorted
+		private final Lambda1<T, V> COMPARE;	// this is what of the array has to be compared
+		private final T[] ARRAY;				// this is the array to be sorted
 
 		/**
 		 * (QuickSort) sorting elements according to their specific values
      	 * @see https://bit.ly/3GGQU4W
-		 * @param a array
-		 * @param m mode
-		 * @param c lambda method
+		 * @param A array
+		 * @param M mode
+		 * @param C lambda method
 		 */
-		private QuickSort(final T[] a, final boolean m, final Lambda1<T, V> c){
-			array	= a;
-			MODE	= m;
-			compare = c;
-			quickSort(0, array.length-1);
+		private QuickSort(final T[] A, final boolean M, final Lambda1<T, V> C){
+			ARRAY	= A;
+			MODE	= M;
+			COMPARE = C;
+			quickSort(0, ARRAY.length-1);
 		}
 
-		private T[] quickSort(final int left, final int right){
-			int l	= left, r = right; 
+		private T[] quickSort(final int LEFT, final int RIGHT){
+			int l	= LEFT, r = RIGHT; 
 
 			// getting the pivot from a calculated mid point
-			final var PIVOT = compare.op(array[(l + r) / 2]);
+			final V PIVOT = COMPARE.op(ARRAY[(l + r) / 2]);
 
 			// partition 
 			while (l <= r) {
 				// loop left index if the current element is smaller or greater than pivot
-				while (MODE? compare.op(array[l]).compareTo(PIVOT) < 0: compare.op(array[l]).compareTo(PIVOT) > 0)	l++;
+				while (MODE? COMPARE.op(ARRAY[l]).compareTo(PIVOT) < 0: COMPARE.op(ARRAY[l]).compareTo(PIVOT) > 0)	l++;
 				// loop right index if the current element is greater or smaller than pivot
-				while (MODE? compare.op(array[r]).compareTo(PIVOT) > 0: compare.op(array[r]).compareTo(PIVOT) < 0)	r--;
+				while (MODE? COMPARE.op(ARRAY[r]).compareTo(PIVOT) > 0: COMPARE.op(ARRAY[r]).compareTo(PIVOT) < 0)	r--;
 
 				if (l <= r) {
-					final T tmpNode	= array[l];
-					array[l++]	= array[r];
-					array[r--]	= tmpNode;
+					final T TMP_NODE= ARRAY[l];
+					ARRAY[l++]		= ARRAY[r];
+					ARRAY[r--]		= TMP_NODE;
 				}
 			}
 
 			// recursion
-			if (left < r ) quickSort(left,  r);
-			if (l < right) quickSort(l, right);
+			if (LEFT < r ) quickSort(LEFT,  r);
+			if (l < RIGHT) quickSort(l, RIGHT);
 
-			return array;
+			return ARRAY;
 		}
 
 		/**
@@ -395,7 +394,7 @@ public class Util{
 		 * @return sorted array
 		 */
 		public T[] getSorted(){
-			return array;
+			return ARRAY;
 		}
 	}
 }

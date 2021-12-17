@@ -18,27 +18,27 @@ public class Algo {
 
 	/**
 	 * Constructor
-	 * @param map
-	 * @param kOpt max levels of K-Opt
-	 * @param lkh max Lin Kernighan combinations
+	 * @param M a Map object
+	 * @param K_OPT max levels of K-Opt
+	 * @param LKH max Lin Kernighan combinations
 	 */
-	public Algo(final Map map, final int kOpt, final int lkh){
-		MAP 		= map;
+	public Algo(final Map M, final int K_OPT, final int LKH){
+		MAP 		= M;
 		cities 		= MAP.getCities();
 		N_CITIES 	= MAP.getQuantity();
-		MAX_OPT 	= kOpt;
-		MAX_LKH	 	= N_CITIES > lkh? lkh: N_CITIES > 3? N_CITIES-3: 0;
+		MAX_OPT 	= K_OPT;
+		MAX_LKH	 	= N_CITIES > LKH? LKH: N_CITIES > 3? N_CITIES-3: 0;
 
 		// ......... starting the algorithms .........
         kruskal();		// starting the greedy algorithm for the first tour
 		optimiser();	// running the optimiser (Chained Lin-Kernighan Heuristic)
 		settingRoute();	// setting the array of the final improved path
     }
-    public Algo(final Map m){
+    public Algo(final Map M){
 		// first parameter is the cities array
 		// second one is the number of k-OPT
 		// third one is the number of lkh cycles per level
-		this(m, 3, 5);	// calling the main contructos
+		this(M, 3, 5);	// calling the main contructos
     }
 
 
@@ -189,16 +189,16 @@ public class Algo {
 	/**
 	 * Flipping the cities
 	 * @param prevA
-	 * @param a start of flip
-	 * @param b end of flip
+	 * @param A start of flip
+	 * @param B end of flip
 	 * @param nextB
 	 */
-	private void flip(final City prevA, final City a, final City b, final City nextB){
-		prevA.replaceNeighbour(a, b);		// exchange the link between prevA and a with prevA and b
-		a.replaceNeighbour(prevA, nextB);	// exchange the link between a and prevA with a and prevB
+	private void flip(final City prevA, final City A, final City B, final City nextB){
+		prevA.replaceNeighbour(A, B);		// exchange the link between prevA and A with prevA and B
+		A.replaceNeighbour(prevA, nextB);	// exchange the link between A and prevA with A and prevB
 
-		nextB.replaceNeighbour(b, a);		// exchange the link between nextB and b with nextB and a
-		b.replaceNeighbour(nextB, prevA);	// exchange the link between b and nextB with b and prevA
+		nextB.replaceNeighbour(B, A);		// exchange the link between nextB and B with nextB and A
+		B.replaceNeighbour(nextB, prevA);	// exchange the link between B and nextB with B and prevA
 	}
 
 
@@ -223,9 +223,9 @@ public class Algo {
 			while (arr[r].SCORE < PIVOT) r--;
 
 			if (l <= r) {
-				final Score tmpNode = arr[l];
-				arr[l++] = arr[r];
-				arr[r--] = tmpNode;
+				final Score TMP_NODE= arr[l];
+				arr[l++]			= arr[r];
+				arr[r--]			= TMP_NODE;
 			}
 		}
 
