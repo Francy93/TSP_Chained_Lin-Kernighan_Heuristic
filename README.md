@@ -1,5 +1,5 @@
 # TSP Chained Lin-Kernighan Heuristic
-AI: First project of the Computer Science third-year about Artificial Intelligence.
+AI: First project of the Computer Science third-year about Traveling Salesman Problem.
 
 ![alt text](Report/img/Page1.jpg "Main page")
 ![alt text](Report/img/Page2.jpg "Main page")
