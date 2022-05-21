@@ -53,8 +53,10 @@ Thumbs.db
 */.vscode/*
 
 #build directories
-Code/bin/*
-Code/build/*
+*/bin/*
+*/.bin/*
+*/build/*
+*/.build/*
 
 #compiled files
 *.o
